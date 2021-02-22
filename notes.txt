@@ -1,0 +1,49 @@
+
+
+- Intermediate Representations:
+	* Can be a graph or something resembling a sequential asm code program,
+	  or something else entirely.
+
+- The Optimizer:
+	* More complicated optimizations depend on context while simplier (first pass) 
+	  optimizations do not.
+
+	* Most optimzations consists of an analysis and transformation.
+	
+	* Dataflow analysis reasons, at compile time, about the flow of values at 
+	  runtime.
+		- Typically solve a system of simultaneous set equations that are 
+		  derived from the structure of the code being translated.
+		- Dependence analysis uses number theoretic tests to reason about the 
+		  values that can be aaumed by subscript expressions.
+
+	* Transformations: improve the time and space requirements of executables
+
+- The Backend:
+	* Selects target-machine operations to implement each IR operation.
+
+	* Chooses the order in which the operations will execute efficiently.
+
+	* Decides which values will reside in registers and which values will 
+	  reside in memory and inserts code to enforce those decisions.
+
+- Instruction Selection:
+	* Ignores the physical register constraints of the hardware.	
+
+	* First stage maps each IR operation, in its context, into one 
+	  or more target machine operations.
+	
+	* Virtual Register: a symbolic register name that the compiler
+	  uses to indicate that a value can be stored in a register.
+
+- Register Allocation:
+	* Maps the virtual registers created in the Instruction 
+	  Selection phase to actual target-machine registers.
+
+- Instruction Scheduling:
+	* May need to reorder operations to reflect the target machine's
+	  specific performance constraints.
+
+	* Goal is to minimize the number of cycles required to complete
+	  the required instructions.
+

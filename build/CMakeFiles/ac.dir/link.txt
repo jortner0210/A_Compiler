@@ -1,0 +1,1 @@
+/usr/bin/cc -O3   CMakeFiles/ac.dir/src/Core.c.o CMakeFiles/ac.dir/src/Scanner.c.o CMakeFiles/ac.dir/src/SymbolTable.c.o CMakeFiles/ac.dir/src/main.c.o  -o ac 
