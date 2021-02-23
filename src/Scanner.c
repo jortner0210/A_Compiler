@@ -130,12 +130,9 @@ AC_Result AC_getToken(char *ptr, AC_Token *token)
 			while ((peek_char >= 'a' && peek_char <= 'z') ||
 				   (peek_char >= 'A' && peek_char <= 'Z') ||
 				   (peek_char >= '0' && peek_char <= '9') ||
-				   (peek_char == '_')) {
-				peek_char = AC_lexCatChar(token->lexeme,
-										  peek_char, 
-										  &next_ptr, 
-										  &char_count); 
-			}
+				   (peek_char == '_')) 
+				peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+			
 			token->lexeme[char_count] = '\0';
 			break;
 		
@@ -144,12 +141,9 @@ AC_Result AC_getToken(char *ptr, AC_Token *token)
 		// (['.'])([0...9])*
 		//
 		case '.': 			
-			while (peek_char >= '0' && peek_char <= '9') {
-				peek_char = AC_lexCatChar(token->lexeme,
-										  peek_char, 
-										  &next_ptr, 
-										  &char_count); 
-			}
+			while (peek_char >= '0' && peek_char <= '9') 
+				peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+			
 			token->lexeme[char_count] = '\0';
 			break;	
 
@@ -158,24 +152,14 @@ AC_Result AC_getToken(char *ptr, AC_Token *token)
 		//
 		case '0': case '1': case '2': case '3': case '4': 
 		case '5': case '6': case '7': case '8': case '9':
-			while (peek_char >= '0' && peek_char <= '9') {
-				peek_char = AC_lexCatChar(token->lexeme,
-										  peek_char, 
-										  &next_ptr, 
-										  &char_count); 
-			}
+			while (peek_char >= '0' && peek_char <= '9') 
+				peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+			
 			if (peek_char == '.') {
-				peek_char = AC_lexCatChar(token->lexeme,
-										  peek_char, 
-										  &next_ptr, 
-										  &char_count); 
+				peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
 
-				while (peek_char >= '0' && peek_char <= '9') {
-					peek_char = AC_lexCatChar(token->lexeme,
-											  peek_char, 
-											  &next_ptr, 
-											  &char_count); 
-				}
+				while (peek_char >= '0' && peek_char <= '9') 
+					peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
 			}
 			token->lexeme[char_count] = '\0';
 			break;
@@ -202,17 +186,10 @@ AC_Result AC_getToken(char *ptr, AC_Token *token)
 			else if (peek_char == '.' && 
 					((*next_next_ptr) >= '0' &&
 					 (*next_next_ptr) <= '9') ) {
-				peek_char = AC_lexCatChar(token->lexeme,
-										  peek_char, 
-										  &next_ptr, 
-										  &char_count); 
-				while (peek_char >= '0' && peek_char <= '9') {
-					peek_char = AC_lexCatChar(token->lexeme,
-											  peek_char, 
-											  &next_ptr, 
-											  &char_count); 
-				}
+				peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
 
+				while (peek_char >= '0' && peek_char <= '9') 
+					peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
 			}
 			
 			//
@@ -220,24 +197,15 @@ AC_Result AC_getToken(char *ptr, AC_Token *token)
 			// ('-')([0...9])('.')([0...9])*
 			//
 			else if (peek_char >= '0' && peek_char <= '9') {
-				while (peek_char >= '0' && peek_char <= '9') {
-					peek_char = AC_lexCatChar(token->lexeme,
-											  peek_char, 
-											  &next_ptr, 
-											  &char_count); 
-				}
+				while (peek_char >= '0' && peek_char <= '9') 
+					peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+				
 				if (peek_char == '.') {
-					peek_char = AC_lexCatChar(token->lexeme,
-											  peek_char, 
-											  &next_ptr, 
-											  &char_count); 
+					peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
 
-					while (peek_char >= '0' && peek_char <= '9') {
-						peek_char = AC_lexCatChar(token->lexeme,
-												  peek_char, 
-												  &next_ptr, 
-												  &char_count); 
-					}
+					while (peek_char >= '0' && peek_char <= '9') 
+						peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+					
 				}
 			}
 			token->lexeme[char_count] = '\0';
