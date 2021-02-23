@@ -296,10 +296,10 @@ AC_sourceToTokenStream
 	AC_Result result = AC_getToken(buffer, &token);
 
 	while (result == AC_SUCCESS) {
-		printf("%s ", token.lexeme);
+		//printf("%s ", token.lexeme);
 		result = AC_getToken(NULL, &token);
 	}
-	printf("\n");
+	//printf("\n");
 	free(buffer);
 
 	return AC_SUCCESS;
