@@ -117,11 +117,11 @@ AC_sourceToTokenStream
 
 ///////////////////////////// SCANNER HELPER FUNCTIONS
 
-static char 
+static AC_Result 
 AC_lexCatChar
 (
-	char *lexeme, 
-	char new_char, 
+	char *lexeme,
+	char *new_char, 
 	char **next_ptr, 
 	uint32_t *char_count
 );

@@ -10,7 +10,12 @@
 // Returns zero if '\0' found
 // Returns one if there are still more characters to parse
 //
-AC_Result AC_getToken(char *ptr, AC_Token *token)
+AC_Result 
+AC_getToken
+(
+	char *ptr, 
+	AC_Token *token
+) 
 {
 	static uint32_t ln_num   =  0;
 	static uint32_t char_num = -1;
@@ -131,7 +136,7 @@ AC_Result AC_getToken(char *ptr, AC_Token *token)
 				   (peek_char >= 'A' && peek_char <= 'Z') ||
 				   (peek_char >= '0' && peek_char <= '9') ||
 				   (peek_char == '_')) 
-				peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 			
 			token->lexeme[char_count] = '\0';
 			break;
@@ -142,7 +147,7 @@ AC_Result AC_getToken(char *ptr, AC_Token *token)
 		//
 		case '.': 			
 			while (peek_char >= '0' && peek_char <= '9') 
-				peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 			
 			token->lexeme[char_count] = '\0';
 			break;	
@@ -153,13 +158,13 @@ AC_Result AC_getToken(char *ptr, AC_Token *token)
 		case '0': case '1': case '2': case '3': case '4': 
 		case '5': case '6': case '7': case '8': case '9':
 			while (peek_char >= '0' && peek_char <= '9') 
-				peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 			
 			if (peek_char == '.') {
-				peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 
 				while (peek_char >= '0' && peek_char <= '9') 
-					peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+					AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 			}
 			token->lexeme[char_count] = '\0';
 			break;
@@ -186,10 +191,10 @@ AC_Result AC_getToken(char *ptr, AC_Token *token)
 			else if (peek_char == '.' && 
 					((*next_next_ptr) >= '0' &&
 					 (*next_next_ptr) <= '9') ) {
-				peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 
 				while (peek_char >= '0' && peek_char <= '9') 
-					peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+					AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 			}
 			
 			//
@@ -198,13 +203,13 @@ AC_Result AC_getToken(char *ptr, AC_Token *token)
 			//
 			else if (peek_char >= '0' && peek_char <= '9') {
 				while (peek_char >= '0' && peek_char <= '9') 
-					peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+					AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 				
 				if (peek_char == '.') {
-					peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+					AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 
 					while (peek_char >= '0' && peek_char <= '9') 
-						peek_char = AC_lexCatChar(token->lexeme, peek_char, &next_ptr, &char_count); 
+						AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count); 
 					
 				}
 			}
@@ -225,7 +230,12 @@ AC_Result AC_getToken(char *ptr, AC_Token *token)
 //
 // Returns AC_Return_Type Enum
 //
-AC_Result AC_readFile(const char *file_name, char **char_buffer, size_t *size)
+AC_Result 
+AC_readFile
+(
+	const char *file_name, 
+	char **char_buffer, size_t *size
+)
 {
 	FILE* fp;	
 
@@ -266,7 +276,11 @@ AC_Result AC_readFile(const char *file_name, char **char_buffer, size_t *size)
 }
 
 
-AC_Result AC_sourceToTokenStream(const char *file_name)
+AC_Result 
+AC_sourceToTokenStream
+(
+	const char *file_name
+)
 {
 	char *buffer;
 	size_t buff_size;
@@ -285,7 +299,7 @@ AC_Result AC_sourceToTokenStream(const char *file_name)
 	AC_Result result = AC_getToken(buffer, &token);
 
 	while (result == AC_SUCCESS) {
-//		printf("%s ", token.lexeme);
+		printf("%s ", token.lexeme);
 		result = AC_getToken(NULL, &token);
 	}
 	printf("\n");
@@ -298,12 +312,23 @@ AC_Result AC_sourceToTokenStream(const char *file_name)
 
 //
 // AC_getToken Helper function
+// 
+// Concatenates character pointed at by new_char to lexeme
+// Increments next_ptr, updates new_char value, and increments char_count
 //
-static char AC_lexCatChar(char *lexeme, char new_char, char **next_ptr, uint32_t *char_count) {
-	lexeme[*char_count] = new_char;;
+static AC_Result 
+AC_lexCatChar
+(
+	char *lexeme,
+	char *new_char, 
+	char **next_ptr, 
+	uint32_t *char_count
+) 
+{
+	lexeme[*char_count] = (*new_char);
 
 	(*next_ptr)++;
-	char next_char = (**next_ptr);
+	(*new_char) = (**next_ptr);
 	(*char_count)++;
-	return next_char;
+	return AC_SUCCESS;
 }
