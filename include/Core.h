@@ -8,7 +8,9 @@ typedef enum
 	AC_ERROR,
 	AC_IO_ERROR,
 
-	AC_EOF		
+	AC_EOF,
+
+	AC_NOT_NUMERIC	
 
 } AC_Result;
 

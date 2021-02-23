@@ -145,8 +145,8 @@ AC_getToken
 		// Handle '.' by itself and '.' at the beginning of a float:
 		// (['.'])([0...9])*
 		//
-		case '.': 			
-			while (peek_char >= '0' && peek_char <= '9') 
+		case '.': 		
+			while (AC_isNumeric(peek_char) == AC_SUCCESS) 
 				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 			
 			token->lexeme[char_count] = '\0';
@@ -157,13 +157,13 @@ AC_getToken
 		//
 		case '0': case '1': case '2': case '3': case '4': 
 		case '5': case '6': case '7': case '8': case '9':
-			while (peek_char >= '0' && peek_char <= '9') 
+			while (AC_isNumeric(peek_char) == AC_SUCCESS) 
 				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 			
 			if (peek_char == '.') {
 				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 
-				while (peek_char >= '0' && peek_char <= '9') 
+				while (AC_isNumeric(peek_char) == AC_SUCCESS) 
 					AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 			}
 			token->lexeme[char_count] = '\0';
@@ -188,9 +188,7 @@ AC_getToken
 			//
 			// (-)(.)([0...9])([0...9])* 
 			//
-			else if (peek_char == '.' && 
-					((*next_next_ptr) >= '0' &&
-					 (*next_next_ptr) <= '9') ) {
+			else if (peek_char == '.' && AC_isNumeric((*next_next_ptr)) == AC_SUCCESS) {
 				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 
 				while (peek_char >= '0' && peek_char <= '9') 
@@ -201,16 +199,15 @@ AC_getToken
 			// ('-')([0...9])([0...9])* 
 			// ('-')([0...9])('.')([0...9])*
 			//
-			else if (peek_char >= '0' && peek_char <= '9') {
-				while (peek_char >= '0' && peek_char <= '9') 
+			else if (AC_isNumeric(peek_char) == AC_SUCCESS) {
+				while (AC_isNumeric(peek_char) == AC_SUCCESS) 
 					AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 				
 				if (peek_char == '.') {
 					AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
 
-					while (peek_char >= '0' && peek_char <= '9') 
-						AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count); 
-					
+					while (AC_isNumeric(peek_char) == AC_SUCCESS) 
+						AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count); 	
 				}
 			}
 			token->lexeme[char_count] = '\0';
@@ -311,7 +308,7 @@ AC_sourceToTokenStream
 ///////////////////////////// SCANNER HELPER FUNCTIONS
 
 //
-// AC_getToken Helper function
+// AC_getToken Helper Function
 // 
 // Concatenates character pointed at by new_char to lexeme
 // Increments next_ptr, updates new_char value, and increments char_count
@@ -331,4 +328,22 @@ AC_lexCatChar
 	(*new_char) = (**next_ptr);
 	(*char_count)++;
 	return AC_SUCCESS;
+}
+
+//
+// AC_getToken Helper Function
+//
+// is_a_number set 1 if the character is a numeber
+// otherwise, is_a_number set to 0.
+//
+static AC_Result
+AC_isNumeric
+(
+	char check_char
+)
+{
+	if (check_char >= '0' && check_char <= '9')
+		return AC_SUCCESS;
+	else
+		return AC_NOT_NUMERIC;
 }

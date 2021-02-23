@@ -126,4 +126,10 @@ AC_lexCatChar
 	uint32_t *char_count
 );
 
+static AC_Result
+AC_isNumeric
+(
+	char check_char
+);
+
 #endif
