@@ -83,14 +83,21 @@
 
 typedef struct AC_Token
 {
+	uint8_t id;
 	AC_TokenFamily tok_family; // General	
-	AC_TokenType tok_type;	    // Specific
+	AC_TokenType tok_type;	   // Specific
 
 	char lexeme[AC_MAX_LEXEME_SIZE];
 	uint32_t ln_num;
 	uint32_t char_num;
 
 } AC_Token;
+
+void 
+AC_printToken
+(
+	AC_Token *token
+);
 
 ///////////////////////////// SCANNER FUNCTIONS
 

@@ -2,6 +2,22 @@
 #include "Common.h"
 #include "Scanner.h"
 
+///////////////////////////// TOKEN FUNCTIONS
+
+void 
+AC_printToken
+(
+	AC_Token *token
+)
+{
+	printf("Token id: %d\n", token->id);
+	printf("Family  : %d\n", token->tok_family);
+	printf("Type    : %d\n", token->tok_type);
+	printf("Lexeme  : %s\n", token->lexeme);
+	printf("Line #%d, Char #%d\n", token->ln_num, token->char_num);
+	printf("/////////////////////////////\n");
+}
+
 ///////////////////////////// SCANNER FUNCTIONS
 
 //
@@ -217,7 +233,7 @@ AC_getToken
 	// Fill out the rest of the struct	
 	token->ln_num   = ln_num;
 	token->char_num = char_num;
-	AC_getTokenType(lexeme, &token->tok_type);
+	AC_getTokenType(token->lexeme, &token->tok_type);
 
 	return AC_SUCCESS;
 }
@@ -294,12 +310,15 @@ AC_sourceToTokenStream
 	AC_Token token;
 	//uint32_t tokens_available = AC_strLexeme(buffer, &token);
 	AC_Result result = AC_getToken(buffer, &token);
-
+	uint32_t i = 0;
 	while (result == AC_SUCCESS) {
-		//printf("%s ", token.lexeme);
 		result = AC_getToken(NULL, &token);
+		token.id = i;
+		AC_printToken(&token);
+		printf("\n");
+
+		i++;
 	}
-	//printf("\n");
 	free(buffer);
 
 	return AC_SUCCESS;

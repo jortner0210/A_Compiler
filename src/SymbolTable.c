@@ -7,12 +7,12 @@ AC_Result
 AC_getTokenType
 (
 	const char *lexeme,
-	 AC_TokenType *tok_type
+	AC_TokenType *tok_type
 )
 {
-	//if (strcmp(lexeme, "(") == 0) {
-	//	printf("Found left paren");
-	//}
+	if (strcmp(lexeme, "if") == 0) {
+		(*tok_type) = AC_IF;
+	}
 }
 
 AC_Result 
