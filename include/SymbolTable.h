@@ -89,7 +89,8 @@ typedef enum
 	AC_R_SQUARE,
 	AC_L_BRACKET,
 	AC_R_BRACKET,
-	AC_PERIOD	
+	AC_PERIOD,
+	AC_COMMA	
 
 } AC_TokenType;
 
@@ -150,6 +151,15 @@ AC_printSymbolTableItem
 ///////////////////////////// SYMBOL TABLE FUNCTIONS
 
 AC_Result 
+AC_initSymbolTable();
+
+AC_Result 
+AC_destroySymbolTable();
+
+AC_Result
+AC_printSymbolTable();
+
+AC_Result 
 AC_hashStringSymbolTable
 (
 	char *key,
@@ -163,11 +173,5 @@ AC_insertSymbolTable
 	AC_TokenType tok_type,
 	AC_TokenFamily tok_family
 );
-
-AC_Result 
-AC_initSymbolTable();
-
-AC_Result
-AC_printSymbolTable();
 
 #endif

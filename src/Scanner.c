@@ -4,7 +4,36 @@
 
 ///////////////////////////// TOKEN FUNCTIONS
 
-void 
+//
+// TO DO: malloc once, a large pool to pull from
+//
+AC_Result
+AC_generateToken
+(
+	AC_Token **tok_ptr,
+	char *lexeme,
+	uint32_t ln_num,
+	uint32_t char_num
+)
+{
+	static uint32_t tok_id = 0;
+
+	AC_Token *new_token_ptr = (AC_Token *)malloc(sizeof(AC_Token));
+	new_token_ptr->id 		= tok_id;
+	new_token_ptr->ln_num 	= ln_num;
+	new_token_ptr->char_num = char_num;
+
+	AC_getTokenInfo(lexeme, &new_token_ptr->info);
+	strcpy(new_token_ptr->lexeme, lexeme);
+
+	(*tok_ptr) = new_token_ptr;
+
+	tok_id++;
+
+	return AC_SUCCESS;
+}
+
+AC_Result 
 AC_printToken
 (
 	AC_Token *token
@@ -30,7 +59,7 @@ AC_Result
 AC_getToken
 (
 	char *ptr, 
-	AC_Token *token
+	AC_Token **token_ptr
 ) 
 {
 	static uint32_t ln_num   =  0;
@@ -61,7 +90,7 @@ AC_getToken
 		return AC_EOF;
 	
 	// Begin parsing current lexeme 
-	token->lexeme[0]    = curr_char;
+	lexeme[0]    = curr_char;
 	uint32_t char_count = 1;
 	switch (curr_char)
 	{
@@ -77,7 +106,7 @@ AC_getToken
 		case '{':
 		case '}':
 		case ',':
-			token->lexeme[1] = '\0';
+			lexeme[1] = '\0';
 			break;
 		
 		//
@@ -91,12 +120,12 @@ AC_getToken
 		case '/': // '/' and '/='
 		case '%': // '%' and '%='
 			if (peek_char == '=') {
-				token->lexeme[1] = peek_char;
-				token->lexeme[2] = '\0';
+				lexeme[1] = peek_char;
+				lexeme[2] = '\0';
 				next_ptr++;
 			}
 			else 
-				token->lexeme[1] = '\0';
+				lexeme[1] = '\0';
 			break;
 		
 		//
@@ -107,12 +136,12 @@ AC_getToken
 		case '>': // '>' and '>>' and '>='
 		case '+': // '+' and '++' and '+='
 			if (peek_char == '=' || curr_char == peek_char) {
-				token->lexeme[1] = peek_char;
-				token->lexeme[2] = '\0';
+				lexeme[1] = peek_char;
+				lexeme[2] = '\0';
 				next_ptr++;
 			}
 			else 
-				token->lexeme[1] = '\0';
+				lexeme[1] = '\0';
 			break;
 
 		//
@@ -121,13 +150,13 @@ AC_getToken
 		case '&':
 		case '|':
 			if (curr_char == peek_char) {
-				token->lexeme[1] = peek_char;
-				token->lexeme[2] = '\0';
+				lexeme[1] = peek_char;
+				lexeme[2] = '\0';
 
 				next_ptr++;
 			}
 			else {
-				token->lexeme[1] = '\0';
+				lexeme[1] = '\0';
 			}	
 			break;
 
@@ -152,9 +181,9 @@ AC_getToken
 				   (peek_char >= 'A' && peek_char <= 'Z') ||
 				   (peek_char >= '0' && peek_char <= '9') ||
 				   (peek_char == '_')) 
-				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
+				AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
 			
-			token->lexeme[char_count] = '\0';
+			lexeme[char_count] = '\0';
 			break;
 		
 		//
@@ -163,9 +192,9 @@ AC_getToken
 		//
 		case '.': 		
 			while (AC_isNumeric(peek_char) == AC_SUCCESS) 
-				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
+				AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
 			
-			token->lexeme[char_count] = '\0';
+			lexeme[char_count] = '\0';
 			break;	
 
 		//
@@ -174,15 +203,15 @@ AC_getToken
 		case '0': case '1': case '2': case '3': case '4': 
 		case '5': case '6': case '7': case '8': case '9':
 			while (AC_isNumeric(peek_char) == AC_SUCCESS) 
-				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
+				AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
 			
 			if (peek_char == '.') {
-				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
+				AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
 
 				while (AC_isNumeric(peek_char) == AC_SUCCESS) 
-					AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
+					AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
 			}
-			token->lexeme[char_count] = '\0';
+			lexeme[char_count] = '\0';
 			break;
 		
 		//
@@ -196,7 +225,7 @@ AC_getToken
 			// '-=' and '--'
 			//
 			if (peek_char == '=' || curr_char == peek_char) {
-				token->lexeme[1] = peek_char;
+				lexeme[1] = peek_char;
 				char_count++;
 				next_ptr++;
 			}
@@ -205,10 +234,10 @@ AC_getToken
 			// (-)(.)([0...9])([0...9])* 
 			//
 			else if (peek_char == '.' && AC_isNumeric((*next_next_ptr)) == AC_SUCCESS) {
-				AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
+				AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
 
 				while (peek_char >= '0' && peek_char <= '9') 
-					AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
+					AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
 			}
 			
 			//
@@ -217,23 +246,25 @@ AC_getToken
 			//
 			else if (AC_isNumeric(peek_char) == AC_SUCCESS) {
 				while (AC_isNumeric(peek_char) == AC_SUCCESS) 
-					AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
+					AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
 				
 				if (peek_char == '.') {
-					AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count);
+					AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
 
 					while (AC_isNumeric(peek_char) == AC_SUCCESS) 
-						AC_lexCatChar(token->lexeme, &peek_char, &next_ptr, &char_count); 	
+						AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count); 	
 				}
 			}
-			token->lexeme[char_count] = '\0';
+			lexeme[char_count] = '\0';
 			break;
 	}
 
 	// Fill out the rest of the struct	
-	token->ln_num   = ln_num;
-	token->char_num = char_num;
-	AC_getTokenInfo(token->lexeme, &token->info);
+	//token->ln_num   = ln_num;
+	//token->char_num = char_num;
+	//AC_getTokenInfo(lexeme, &token->info);
+
+	AC_generateToken(token_ptr, lexeme, ln_num, char_num);
 
 	return AC_SUCCESS;
 }
@@ -307,17 +338,13 @@ AC_sourceToTokenStream
 	}
 
 	
-	AC_Token token;
+	AC_Token *token;
 	//uint32_t tokens_available = AC_strLexeme(buffer, &token);
 	AC_Result result = AC_getToken(buffer, &token);
-	uint32_t i = 0;
 	while (result == AC_SUCCESS) {
+		AC_printToken(token);
 		result = AC_getToken(NULL, &token);
-		token.id = i;
-		AC_printToken(&token);
 		printf("\n");
-
-		i++;
 	}
 	free(buffer);
 

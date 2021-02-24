@@ -10,11 +10,69 @@ AC_getTokenInfo
 	AC_TokenInfo *tok_info
 )
 {
-	if (strcmp(lexeme, "if") == 0) {
-		tok_info->tok_family = AC_CONDITIONAL;
-		tok_info->tok_type 	 = AC_IF;
-		tok_info->is_keyword = 1;
+	if (strlen(lexeme) > 1) {
+		if (strcmp(lexeme, "if") == 0) {
+			tok_info->tok_family = AC_CONDITIONAL;
+			tok_info->tok_type 	 = AC_IF;
+			tok_info->is_keyword = 1;
+		}
+		else if (strcmp(lexeme, "else") == 0) {
+			tok_info->tok_family = AC_CONDITIONAL;
+			tok_info->tok_type 	 = AC_ELSE;
+			tok_info->is_keyword = 1;
+		}
 	}
+	else {
+		switch ((*lexeme))
+		{
+			case '(':
+				tok_info->tok_family = AC_PUNCUATION;
+				tok_info->tok_type 	 = AC_L_PAREN;
+				break;
+			
+			case ')':
+				tok_info->tok_family = AC_PUNCUATION;
+				tok_info->tok_type 	 = AC_R_PAREN;
+				break;
+
+			case ';':
+				tok_info->tok_family = AC_PUNCUATION;
+				tok_info->tok_type   = AC_S_COLON;
+				break;
+
+			case ':':
+				tok_info->tok_family = AC_PUNCUATION;
+				tok_info->tok_type   = AC_COLON;
+				break;
+
+			case '[':
+				tok_info->tok_family = AC_PUNCUATION;
+				tok_info->tok_type   = AC_L_SQUARE;
+				break;
+
+			case ']':
+				tok_info->tok_family = AC_PUNCUATION;
+				tok_info->tok_type   = AC_R_SQUARE;
+				break;
+
+			case '{':
+				tok_info->tok_family = AC_PUNCUATION;
+				tok_info->tok_type   = AC_L_BRACKET;
+				break;
+
+			case '}':
+				tok_info->tok_family = AC_PUNCUATION;
+				tok_info->tok_type   = AC_R_BRACKET;
+				break;
+
+			case ',':
+				tok_info->tok_family = AC_PUNCUATION;
+				tok_info->tok_type   = AC_COMMA;
+				break;
+		}
+		tok_info->is_keyword = 0;
+	}
+	
 }
 
 
@@ -38,6 +96,55 @@ AC_printSymbolTableItem
 
 ///////////////////////////// SYMBOL TABLE FUNCTIONS
 
+//
+// Initialize the Symbol Table
+//
+AC_Result 
+AC_initSymbolTable()
+{
+	AC_insertSymbolTable("T", AC_IF, AC_LOOP);
+	AC_insertSymbolTable("Te", AC_IF, AC_LOOP);
+	AC_insertSymbolTable("Tes", AC_IF, AC_LOOP);
+	AC_insertSymbolTable("Test", AC_IF, AC_LOOP);
+	AC_insertSymbolTable("Test_", AC_IF, AC_LOOP);
+	AC_insertSymbolTable("Test_I", AC_IF, AC_LOOP);
+	AC_insertSymbolTable("Test_ID", AC_IF, AC_LOOP);
+}
+
+AC_Result 
+AC_destroySymbolTable()
+{
+	
+}
+
+//
+// Print the contents of the Symbol Table to the terminal
+// 
+AC_Result
+AC_printSymbolTable()
+{
+	printf("/----- AC Symbol Table -----/\n\n");
+	for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) {
+		if( _ac_hash_array[i] != NULL) {
+			AC_SymbolTableItem *item_print = _ac_hash_array[i];;
+			
+			while (item_print != NULL) {
+				AC_printSymbolTableItem(item_print);
+				item_print = item_print->next;
+			}
+		}
+		else {
+			printf("Idx: %d, Val: %p\n", i, _ac_hash_array[i]);
+			printf("/////////////////////////////\n\n"); 
+		}
+	}
+}
+
+//
+// Hash function for symbol table
+// TO DO: change sum of chars to something else
+//		  - I think sum won't distribute as evenly (use xor)
+//
 AC_Result
 AC_hashStringSymbolTable
 (
@@ -85,42 +192,3 @@ AC_insertSymbolTable
 		curr_item->next = new_item;
 	}
 }
-
-//
-// Initialize the Symbol Table
-//
-AC_Result 
-AC_initSymbolTable()
-{
-	AC_insertSymbolTable("T", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Te", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Tes", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Test", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Test_", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Test_I", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Test_ID", AC_IF, AC_LOOP);
-}
-
-//
-// Print the contents of the Symbol Table to the terminal
-// 
-AC_Result
-AC_printSymbolTable()
-{
-	printf("/----- AC Symbol Table -----/\n\n");
-	for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) {
-		if( _ac_hash_array[i] != NULL) {
-			AC_SymbolTableItem *item_print = _ac_hash_array[i];;
-			
-			while (item_print != NULL) {
-				AC_printSymbolTableItem(item_print);
-				item_print = item_print->next;
-			}
-		}
-		else {
-			printf("Idx: %d, Val: %p\n", i, _ac_hash_array[i]);
-			printf("/////////////////////////////\n\n"); 
-		}
-	}
-}
-
