@@ -4,29 +4,17 @@
 ///////////////////////////// TOKEN FUNCTIONS
 
 AC_Result 
-AC_getTokenType
+AC_getTokenInfo
 (
 	const char *lexeme,
-	AC_TokenType *tok_type
+	AC_TokenInfo *tok_info
 )
 {
 	if (strcmp(lexeme, "if") == 0) {
-		(*tok_type) = AC_IF;
+		tok_info->tok_family = AC_CONDITIONAL;
+		tok_info->tok_type 	 = AC_IF;
+		tok_info->is_keyword = 1;
 	}
-}
-
-AC_Result 
-AC_getTokenFamily
-(
-	AC_TokenType tok_type, 
-	AC_TokenFamily *tok_family
-)
-{
-	//switch (tok_type)
-	//{
-	//	case AC_L_PAREN:
-	//		(*tok_family) = AC_PUNCUATION;
-	//}
 }
 
 
@@ -43,8 +31,8 @@ AC_printSymbolTableItem
 )
 {
 	printf("Key         : %s\n", item->key);
-	printf("Token Type  : %d\n", item->tok_type);
-	printf("Token Family: %d\n", item->tok_type);
+	printf("Token Type  : %d\n", item->info.tok_type);
+	printf("Token Family: %d\n", item->info.tok_type);
 	printf("/////////////////////////////\n\n"); 
 }
 
@@ -83,8 +71,8 @@ AC_insertSymbolTable
 	AC_SymbolTableItem *new_item = (AC_SymbolTableItem *)malloc(sizeof(AC_SymbolTableItem));
 	
 	strcpy(new_item->key, key);
-	new_item->tok_type   = tok_type;
-	new_item->tok_family = tok_family;	
+	new_item->info.tok_type   = tok_type;
+	new_item->info.tok_family = tok_family;	
 	new_item->next 		 = NULL;
 	
 	if (_ac_hash_array[hash_arr_idx] == NULL) {

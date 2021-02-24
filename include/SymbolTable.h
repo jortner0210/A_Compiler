@@ -7,6 +7,7 @@
 
 typedef enum
 {
+	AC_CONDITIONAL,
 	AC_LOOP,
 	AC_COMPARISON,
 	AC_IDENTIFIER,
@@ -19,10 +20,13 @@ typedef enum
 
 typedef enum
 {
-	/* LOOPS */
+	/* CONDITIONALS */
 
 	AC_IF,
 	AC_ELSE,
+
+	/* LOOPS */
+
 	AC_WHILE,
 	AC_FOR,
 	
@@ -89,20 +93,21 @@ typedef enum
 
 } AC_TokenType;
 
+
+typedef struct AC_TokenInfo 
+{
+	AC_TokenFamily tok_family;
+	AC_TokenType   tok_type;
+	uint8_t 	   is_keyword;
+} AC_TokenInfo;
+
 ///////////////////////////// TOKEN FUNCTIONS
 
 AC_Result 
-AC_getTokenType
+AC_getTokenInfo
 (
 	const char *lexeme, 
-	AC_TokenType *tok_type
-);
-
-AC_Result 
-AC_getTokenFamily
-(
-	AC_TokenType tok_type, 
-	AC_TokenFamily *tok_family
+	AC_TokenInfo *tok_info
 );
 
 //
@@ -121,8 +126,7 @@ typedef struct AC_SymbolTableItem
 {
 	char key[AC_MAX_SYMBOL_TABLE_SIZE];
 
-	AC_TokenType   tok_type;
-	AC_TokenFamily tok_family;
+	AC_TokenInfo info;
 
 	struct AC_SymbolTableItem *next;
 	

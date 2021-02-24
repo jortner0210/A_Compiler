@@ -11,8 +11,8 @@ AC_printToken
 )
 {
 	printf("Token id: %d\n", token->id);
-	printf("Family  : %d\n", token->tok_family);
-	printf("Type    : %d\n", token->tok_type);
+	printf("Family  : %d\n", token->info.tok_family);
+	printf("Type    : %d\n", token->info.tok_type);
 	printf("Lexeme  : %s\n", token->lexeme);
 	printf("Line #%d, Char #%d\n", token->ln_num, token->char_num);
 	printf("/////////////////////////////\n");
@@ -233,7 +233,7 @@ AC_getToken
 	// Fill out the rest of the struct	
 	token->ln_num   = ln_num;
 	token->char_num = char_num;
-	AC_getTokenType(token->lexeme, &token->tok_type);
+	AC_getTokenInfo(token->lexeme, &token->info);
 
 	return AC_SUCCESS;
 }

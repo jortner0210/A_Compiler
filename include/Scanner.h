@@ -84,8 +84,9 @@
 typedef struct AC_Token
 {
 	uint8_t id;
-	AC_TokenFamily tok_family; // General	
-	AC_TokenType tok_type;	   // Specific
+	//AC_TokenFamily tok_family; // General	
+	//AC_TokenType tok_type;	   // Specific
+	AC_TokenInfo info;
 
 	char lexeme[AC_MAX_LEXEME_SIZE];
 	uint32_t ln_num;
