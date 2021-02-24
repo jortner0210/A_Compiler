@@ -25,41 +25,15 @@ AC_getTokenInfo
 	else {
 		switch ((*lexeme))
 		{
-			case '(':
-				tok_info->tok_type = AC_L_PAREN;
-				break;
-			
-			case ')':
-				tok_info->tok_type = AC_R_PAREN;
-				break;
-
-			case ';':
-				tok_info->tok_type = AC_S_COLON;
-				break;
-
-			case ':':
-				tok_info->tok_type = AC_COLON;
-				break;
-
-			case '[':
-				tok_info->tok_type = AC_L_SQUARE;
-				break;
-
-			case ']':
-				tok_info->tok_type = AC_R_SQUARE;
-				break;
-
-			case '{':
-				tok_info->tok_type = AC_L_BRACKET;
-				break;
-
-			case '}':
-				tok_info->tok_type = AC_R_BRACKET;
-				break;
-
-			case ',':
-				tok_info->tok_type = AC_COMMA;
-				break;
+			case '(': tok_info->tok_type = AC_L_PAREN; 	 break;
+			case ')': tok_info->tok_type = AC_R_PAREN; 	 break;
+			case ';': tok_info->tok_type = AC_S_COLON; 	 break;
+			case ':': tok_info->tok_type = AC_COLON; 	 break;
+			case '[': tok_info->tok_type = AC_L_SQUARE;  break;
+			case ']': tok_info->tok_type = AC_R_SQUARE;  break;
+			case '{': tok_info->tok_type = AC_L_BRACKET; break;
+			case '}': tok_info->tok_type = AC_R_BRACKET; break;
+			case ',': tok_info->tok_type = AC_COMMA; 	 break;
 		}
 		tok_info->tok_family = AC_PUNCUATION;
 		tok_info->is_keyword = 0;
