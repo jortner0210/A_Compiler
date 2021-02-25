@@ -131,14 +131,14 @@ typedef struct AC_TokenInfo
 
 // TO DO: IMPLEMENT GET TOKEN TYPE AND GET TOKEN FAMILY
 
-AC_Result
+static AC_Result
 AC_getTokenType
 (
 	const char *lexeme,
 	AC_TokenType *tok_type
 );
 
-AC_Result
+static AC_Result
 AC_getTokenFamily
 (
 	AC_TokenType tok_type,

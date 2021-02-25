@@ -3,7 +3,7 @@
 
 ///////////////////////////// TOKEN FUNCTIONS
 
-AC_Result
+static AC_Result
 AC_getTokenType
 (
 	const char *lexeme,
@@ -92,7 +92,7 @@ AC_getTokenType
 	}
 }
 
-AC_Result
+static AC_Result
 AC_getTokenFamily
 (
 	AC_TokenType tok_type,
