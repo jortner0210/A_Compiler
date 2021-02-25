@@ -26,3 +26,5 @@ token_2
 -0 -01 -012
 -0.1 -0.12 -01.23
 if
+"testing a string literal"
+"another string literal 10000.02651"

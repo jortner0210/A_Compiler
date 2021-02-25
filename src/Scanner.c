@@ -159,6 +159,17 @@ AC_getToken
 				lexeme[1] = '\0';
 			}	
 			break;
+		
+		//
+		// STRING LITERALS
+		//
+		case '"':
+			while (peek_char != '"') 
+				AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
+			
+			AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
+			lexeme[char_count] = '\0';
+			break;
 
 		//
 		// Identifiers: keywords, variables:
