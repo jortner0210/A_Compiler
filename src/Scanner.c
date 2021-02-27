@@ -2,7 +2,48 @@
 #include "Common.h"
 #include "Scanner.h"
 
-///////////////////////////// TOKEN FUNCTIONS
+///////////////////////////// MAIN SCANNER API
+
+//
+// Converts a raw source file into a stream of identified tokens
+//
+// Stream is implemented as an array based queue of pointers to 
+// AC_Token structures. 
+//
+// To deallocate resources: call AC_destroyTokenStream
+//
+AC_Result 
+AC_sourceToTokenStream
+(
+	const char *file_name
+)
+{
+	char *buffer;
+	size_t buff_size;
+	AC_Result ret;
+
+	// Read File into buffer
+	ret = AC_readFile(file_name, &buffer, &buff_size);
+	if (ret != AC_SUCCESS) {
+		printf("Error reading file!\n");
+		return ret;
+	}
+
+	
+	AC_Token *token;
+	//uint32_t tokens_available = AC_strLexeme(buffer, &token);
+	AC_Result result = AC_getToken(buffer, &token);
+	while (result == AC_SUCCESS) {
+		AC_printToken(token);
+		result = AC_getToken(NULL, &token);
+		printf("\n");
+	}
+	free(buffer);
+
+	return AC_SUCCESS;
+}
+
+///////////////////////////// SCANNER HELPER FUNCTIONS
 
 //
 // TO DO: malloc once, a large pool to pull from
@@ -304,7 +345,7 @@ AC_getToken
 }
 
 //
-// Dynamically allocates a buffer, reads contents of file into a buffer
+// Malloc a buffer and then read the contents of a file into the buffer.
 //
 // Returns AC_Return_Type Enum
 //
@@ -353,44 +394,10 @@ AC_readFile
 	return AC_SUCCESS;
 }
 
-
-AC_Result 
-AC_sourceToTokenStream
-(
-	const char *file_name
-)
-{
-	char *buffer;
-	size_t buff_size;
-	AC_Result ret;
-
-	// Read File into buffer
-	ret = AC_readFile(file_name, &buffer, &buff_size);
-	if (ret != AC_SUCCESS) {
-		printf("Error reading file!\n");
-		return ret;
-	}
-
-	
-	AC_Token *token;
-	//uint32_t tokens_available = AC_strLexeme(buffer, &token);
-	AC_Result result = AC_getToken(buffer, &token);
-	while (result == AC_SUCCESS) {
-		AC_printToken(token);
-		result = AC_getToken(NULL, &token);
-		printf("\n");
-	}
-	free(buffer);
-
-	return AC_SUCCESS;
-}
-
-///////////////////////////// SCANNER HELPER FUNCTIONS
-
 //
 // AC_getToken Helper Function
 // 
-// Concatenates character pointed at by new_char to lexeme
+// Concatenates a character 'new_char' to the end of 'lexeme'
 // Increments next_ptr, updates new_char value, and increments char_count
 //
 static AC_Result 
@@ -412,9 +419,6 @@ AC_lexCatChar
 
 //
 // AC_getToken Helper Function
-//
-// is_a_number set 1 if the character is a numeber
-// otherwise, is_a_number set to 0.
 //
 static AC_Result
 AC_isNumeric

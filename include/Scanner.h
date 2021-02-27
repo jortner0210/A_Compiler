@@ -11,7 +11,7 @@
 #include "Core.h"
 #include "SymbolTable.h"
 
-///////////////////////////// SCANNER TYPES
+///////////////////////////// TOKEN TYPE
 
 #define AC_MAX_LEXEME_SIZE 100
 
@@ -41,7 +41,39 @@ AC_printToken
 	AC_Token *token
 );
 
-///////////////////////////// SCANNER FUNCTIONS
+///////////////////////////// TOKEN STREAM TYPE
+
+typedef struct AC_TokenStreamNode
+{
+	AC_TokenStreamNode *data;
+	AC_TokenStreamNode *next;
+
+} AC_TokenStreamNode;
+
+
+typedef struct AC_TokenStream
+{
+	AC_Token *head;
+	AC_Token *next;
+	AC_Token *tail;
+
+} AC_TokenStream;
+
+///////////////////////////// MAIN SCANNER API
+
+AC_Result 
+AC_sourceToTokenStream
+(
+	const char *file_name
+);
+
+//AC_Result
+//AC_destroyTokenStream
+//(
+//
+//);
+
+///////////////////////////// SCANNER HELPER FUNCTIONS
 
 AC_Result 
 AC_getToken
@@ -57,14 +89,6 @@ AC_readFile
 	char **char_buffer, 
 	size_t *size
 );
-
-AC_Result 
-AC_sourceToTokenStream
-(
-	const char *file_name
-);
-
-///////////////////////////// SCANNER HELPER FUNCTIONS
 
 static AC_Result 
 AC_lexCatChar

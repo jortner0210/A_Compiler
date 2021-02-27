@@ -168,6 +168,20 @@ AC_getTokenFamily
 		(*tok_family) = AC_BIT_WISE_OPERATOR;
 		(*is_keyword) = 0;
 	}
+	else if (tok_type == AC_L_PAREN
+			 || tok_type == AC_R_PAREN
+			 || tok_type == AC_S_COLON
+			 || tok_type == AC_COLON
+			 || tok_type == AC_L_SQUARE
+			 || tok_type == AC_R_SQUARE
+			 || tok_type == AC_L_BRACKET
+			 || tok_type == AC_R_BRACKET
+			 || tok_type == AC_PERIOD
+			 || tok_type == AC_COMMA)		 
+	{
+		(*tok_family) = AC_PUNCUATION;
+		(*is_keyword) = 0;
+	}
 }
 
 AC_Result 
