@@ -59,6 +59,9 @@ typedef struct AC_TokenStream
 
 } AC_TokenStream;
 
+
+
+
 ///////////////////////////// MAIN SCANNER API
 
 AC_Result 

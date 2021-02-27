@@ -4,11 +4,13 @@
 
 ///////////////////////////// MAIN SCANNER API
 
+
+
+
 //
 // Converts a raw source file into a stream of identified tokens
 //
-// Stream is implemented as an array based queue of pointers to 
-// AC_Token structures. 
+// Stream is implemented as a linked list based queue 
 //
 // To deallocate resources: call AC_destroyTokenStream
 //
