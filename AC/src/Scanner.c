@@ -5,8 +5,7 @@
 ///////////////////////////// TOKEN STREAM API
 
 //
-// Allocate memory for the Token Stream struct 
-// and initialize values to NULL.
+// Allocate memory for the Token Stream struct and initialize its values to NULL.
 //
 // About AC_TokenStream:
 // 	- Its a linked list
@@ -27,7 +26,7 @@ AC_initTokenStream
 }
 
 //
-// Deallocate memory 
+// Deallocate the resources of an AC_TokenStream
 //
 // NOTE: Deallocating the stream deallocates all of 
 //		 the tokens that it was given.
