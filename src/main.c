@@ -17,9 +17,9 @@ int main(int argc, char* argv[])
 	AC_printTokenStream(token_stream);
 	AC_destroyTokenStream(token_stream);
 
-	AC_initSymbolTable();
-	AC_printSymbolTable();	
-	AC_destroySymbolTable();
+	//AC_initSymbolTable();
+	//AC_printSymbolTable();	
+	//AC_destroySymbolTable();
 
 	return 0;
 }
