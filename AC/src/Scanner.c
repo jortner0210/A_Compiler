@@ -4,21 +4,6 @@
 
 ///////////////////////////// TOKEN STREAM API
 
-/*
-typedef struct AC_TokenStreamNode
-{
-	AC_Token *data;
-	AC_TokenStreamNode *next;
-
-} AC_TokenStreamNode;
-
-typedef struct AC_TokenStream
-{
-	AC_TokenStreamNode *head;
-	AC_TokenStreamNode *tail;
-
-} AC_TokenStream;*/
-
 AC_Result
 AC_initTokenStream
 (
