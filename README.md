@@ -5,7 +5,10 @@
     - Parser (ACTIVE)
 
 ## Functionality:
-    - 03/03/2021: Read source file, recognize lexemes and generate a Token Stream, prints stream to terminal
+    - 03/03/2021: 
+        * Read source file
+        * Recognize lexemes and generate a Token Stream
+        * Prints stream to terminal
 
 ## Linux Build:
 ```bash
