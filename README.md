@@ -1,8 +1,9 @@
 # A_Compiler
 
 ## Current State of the Project:
-    - Scanner (COMPLETED)
-    - Parser (ACTIVE)
+    - Scanner      (COMPLETED)
+    - Symbol Table (ACTIVE)
+    - Parser       (ON DECK)
 
 ## Functionality:
     - 03/03/2021: 

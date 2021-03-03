@@ -4,6 +4,17 @@
 
 ///////////////////////////// TOKEN STREAM API
 
+//
+// Allocate memory for the Token Stream struct 
+// and initialize values to NULL.
+//
+// About AC_TokenStream:
+// 	- Its a linked list
+//  - The nodes in the list are AC_TokenStreamNode structs which contain:
+// 		1) A pointer to an AC_Token struct 
+// 		2) A next pointer to an AC_TokenStreamNode
+//	- The struct AC_TokenStream contains a head and tail pointer
+//
 AC_Result
 AC_initTokenStream
 (
@@ -15,6 +26,13 @@ AC_initTokenStream
 	(*token_stream)->tail = NULL;
 }
 
+//
+// Deallocate memory 
+//
+// NOTE: Deallocating the stream deallocates all of 
+//		 the tokens that it was given.
+//		 Tokens should not outlive the Token Stream.
+//
 AC_Result
 AC_destroyTokenStream
 (
@@ -22,6 +40,7 @@ AC_destroyTokenStream
 )
 {
 	if (token_stream != NULL && token_stream->head != NULL) {
+		// The following is basic Linked List Traversal
 		AC_TokenStreamNode *del_node;
 		AC_TokenStreamNode *next_node;
 		AC_Token *del_token;
@@ -40,6 +59,10 @@ AC_destroyTokenStream
 	return AC_SUCCESS;
 }
 
+//
+// Add a new node to the token stream with data
+// set to the passed AC_Token
+//
 AC_Result
 AC_appendTokenStream
 (
@@ -51,6 +74,8 @@ AC_appendTokenStream
 	new_node->next = NULL;
 	new_node->data = token;
 
+	// If the stream is empty set head and tail.
+	// Otherwise append to tail and update tail.
 	if (token_stream->head == NULL) {
 		token_stream->head = new_node;
 		token_stream->tail = new_node;
@@ -62,6 +87,9 @@ AC_appendTokenStream
 	return AC_SUCCESS;
 }
 
+//
+// Display the tokens in a Token Stream to the terminal.
+//
 AC_Result
 AC_printTokenStream
 (
@@ -104,6 +132,8 @@ AC_sourceToTokenStream
 
 	AC_initTokenStream(token_stream);
 
+	// Get next token from source and append to Token Stream
+	// until there are no more tokens left.
 	AC_Token *token;
 	AC_Result result = AC_getToken(buffer, &token);
 
@@ -119,7 +149,9 @@ AC_sourceToTokenStream
 ///////////////////////////// SCANNER HELPER FUNCTIONS
 
 //
-// TO DO: malloc once, a large pool to pull from
+// Uses malloc to generate a new AC_Token struct, filling it 
+// with the passed data and using AC_getTokenInfo to get
+// information based on the lexeme. 
 //
 AC_Result
 AC_generateToken
@@ -147,6 +179,9 @@ AC_generateToken
 	return AC_SUCCESS;
 }
 
+//
+// Print the contents of a token to the screen.
+//
 AC_Result 
 AC_printToken
 (
