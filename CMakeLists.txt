@@ -8,11 +8,11 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 # VARIABLES
-set(SRC_DIR src)
+set(SRC_DIR ${CMAKE_SOURCE_DIR}/AC/src)
 set(CMAKE_C_FLAGS_RELEASE "-O3")
 
 file(GLOB SOURCES ${SRC_DIR}/*.c)
 
-include_directories(ac include)
+include_directories(ac ${CMAKE_SOURCE_DIR})
 
-add_executable(ac ${SOURCES})
+add_executable(ac ${CMAKE_SOURCE_DIR}/AC/main.c ${SOURCES})
