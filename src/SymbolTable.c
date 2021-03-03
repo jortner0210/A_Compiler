@@ -224,6 +224,9 @@ AC_printSymbolTableItem
 AC_Result 
 AC_initSymbolTable()
 {
+	//for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) 
+	//	_ac_hash_array[i] = NULL;
+
 	AC_insertSymbolTable("T", AC_IF, AC_LOOP);
 	AC_insertSymbolTable("Te", AC_IF, AC_LOOP);
 	AC_insertSymbolTable("Tes", AC_IF, AC_LOOP);
@@ -236,7 +239,18 @@ AC_initSymbolTable()
 AC_Result 
 AC_destroySymbolTable()
 {
-	
+	for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) {
+		if (_ac_hash_array[i] != NULL) {
+			AC_SymbolTableItem *del_item = _ac_hash_array[i];
+			AC_SymbolTableItem *next_item;
+			while (del_item != NULL) {
+				next_item = del_item->next;
+				free(del_item);
+				del_item = next_item;
+			}
+			_ac_hash_array[i] = NULL;
+		}
+	}	
 }
 
 //
@@ -265,7 +279,7 @@ AC_printSymbolTable()
 //
 // Hash function for symbol table
 // TO DO: change sum of chars to something else
-//		  - I think sum won't distribute as evenly (use xor)
+//		  - I think sum won't distribute evenly (use xor)
 //
 AC_Result
 AC_hashStringSymbolTable
@@ -302,7 +316,7 @@ AC_insertSymbolTable
 	strcpy(new_item->key, key);
 	new_item->info.tok_type   = tok_type;
 	new_item->info.tok_family = tok_family;	
-	new_item->next 		 = NULL;
+	new_item->next 		 	  = NULL;
 	
 	if (_ac_hash_array[hash_arr_idx] == NULL) {
 		_ac_hash_array[hash_arr_idx] = new_item;		

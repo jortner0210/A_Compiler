@@ -2,10 +2,95 @@
 #include "Common.h"
 #include "Scanner.h"
 
+///////////////////////////// TOKEN STREAM API
+
+/*
+typedef struct AC_TokenStreamNode
+{
+	AC_Token *data;
+	AC_TokenStreamNode *next;
+
+} AC_TokenStreamNode;
+
+typedef struct AC_TokenStream
+{
+	AC_TokenStreamNode *head;
+	AC_TokenStreamNode *tail;
+
+} AC_TokenStream;*/
+
+AC_Result
+AC_initTokenStream
+(
+	AC_TokenStream **token_stream
+)
+{
+	(*token_stream) = (AC_TokenStream *)malloc(sizeof(AC_TokenStream));
+	(*token_stream)->head = NULL;
+	(*token_stream)->tail = NULL;
+}
+
+AC_Result
+AC_destroyTokenStream
+(
+	AC_TokenStream *token_stream
+)
+{
+	if (token_stream != NULL && token_stream->head != NULL) {
+		AC_TokenStreamNode *del_node;
+		AC_TokenStreamNode *next_node;
+		AC_Token *del_token;
+
+		del_node = token_stream->head;
+
+		while (del_node != NULL) {
+			next_node = del_node->next;
+			free(del_node->data);
+			free(del_node);
+
+			del_node = next_node;
+		}
+		free(token_stream);
+	}
+	return AC_SUCCESS;
+}
+
+AC_Result
+AC_appendTokenStream
+(
+	AC_TokenStream *token_stream,
+	AC_Token *token
+)
+{
+	AC_TokenStreamNode *new_node = (AC_TokenStreamNode *)malloc(sizeof(AC_TokenStreamNode));
+	new_node->next = NULL;
+	new_node->data = token;
+
+	if (token_stream->head == NULL) {
+		token_stream->head = new_node;
+		token_stream->tail = new_node;
+	}
+	else {
+		token_stream->tail->next = new_node;
+		token_stream->tail = new_node;
+	}
+	return AC_SUCCESS;
+}
+
+AC_Result
+AC_printTokenStream
+(
+	AC_TokenStream *token_stream
+)
+{
+	AC_TokenStreamNode *print_node = token_stream->head;
+	while (print_node != NULL) {
+		AC_printToken(print_node->data);
+		print_node = print_node->next;
+	}
+}
+
 ///////////////////////////// MAIN SCANNER API
-
-
-
 
 //
 // Converts a raw source file into a stream of identified tokens
@@ -17,7 +102,8 @@
 AC_Result 
 AC_sourceToTokenStream
 (
-	const char *file_name
+	const char *file_name,
+	AC_TokenStream **token_stream
 )
 {
 	char *buffer;
@@ -31,14 +117,14 @@ AC_sourceToTokenStream
 		return ret;
 	}
 
-	
+	AC_initTokenStream(token_stream);
+
 	AC_Token *token;
-	//uint32_t tokens_available = AC_strLexeme(buffer, &token);
 	AC_Result result = AC_getToken(buffer, &token);
+
 	while (result == AC_SUCCESS) {
-		AC_printToken(token);
+		AC_appendTokenStream((*token_stream), token);
 		result = AC_getToken(NULL, &token);
-		printf("\n");
 	}
 	free(buffer);
 
@@ -336,11 +422,6 @@ AC_getToken
 			break;
 	}
 
-	// Fill out the rest of the struct	
-	//token->ln_num   = ln_num;
-	//token->char_num = char_num;
-	//AC_getTokenInfo(lexeme, &token->info);
-
 	AC_generateToken(token_ptr, lexeme, ln_num, char_start_num);
 
 	return AC_SUCCESS;
@@ -355,7 +436,8 @@ AC_Result
 AC_readFile
 (
 	const char *file_name, 
-	char **char_buffer, size_t *size
+	char **char_buffer, 
+	size_t *size
 )
 {
 	FILE* fp;	

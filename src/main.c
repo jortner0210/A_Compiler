@@ -10,12 +10,16 @@ int main(int argc, char* argv[])
 	const char *file_name = argv[1];
 
 	AC_Result result;
+	AC_TokenStream *token_stream;
 
-	result = AC_sourceToTokenStream(file_name); 
-	//AC_printResult(result);
+	result = AC_sourceToTokenStream(file_name, &token_stream); 
 
-	//AC_initSymbolTable();
-	//AC_printSymbolTable();	
+	AC_printTokenStream(token_stream);
+	AC_destroyTokenStream(token_stream);
+
+	AC_initSymbolTable();
+	AC_printSymbolTable();	
+	AC_destroySymbolTable();
 
 	return 0;
 }
