@@ -1,9 +1,7 @@
 #include "Common.h"
 #include "Core.h"
 
-void 
-AC_printResult
-(
+void AC_printResult(
 	AC_Result result
 )
 {

@@ -14,9 +14,7 @@
 // 		2) A next pointer to an AC_TokenStreamNode
 //	- The struct AC_TokenStream contains a head and tail pointer
 //
-AC_Result
-AC_initTokenStream
-(
+AC_Result AC_initTokenStream(
 	AC_TokenStream **token_stream
 )
 {
@@ -32,9 +30,7 @@ AC_initTokenStream
 //		 the tokens that it was given.
 //		 Tokens should not outlive the Token Stream.
 //
-AC_Result
-AC_destroyTokenStream
-(
+AC_Result AC_destroyTokenStream(
 	AC_TokenStream *token_stream
 )
 {
@@ -62,9 +58,7 @@ AC_destroyTokenStream
 // Add a new node to the token stream with data
 // set to the passed AC_Token
 //
-AC_Result
-AC_appendTokenStream
-(
+AC_Result AC_appendTokenStream(
 	AC_TokenStream *token_stream,
 	AC_Token *token
 )
@@ -89,9 +83,7 @@ AC_appendTokenStream
 //
 // Display the tokens in a Token Stream to the terminal.
 //
-AC_Result
-AC_printTokenStream
-(
+AC_Result AC_printTokenStream(
 	AC_TokenStream *token_stream
 )
 {
@@ -111,9 +103,7 @@ AC_printTokenStream
 //
 // To deallocate resources: call AC_destroyTokenStream
 //
-AC_Result 
-AC_sourceToTokenStream
-(
+AC_Result AC_sourceToTokenStream(
 	const char *file_name,
 	AC_TokenStream **token_stream
 )
@@ -152,9 +142,7 @@ AC_sourceToTokenStream
 // with the passed data and using AC_getTokenInfo to get
 // information based on the lexeme. 
 //
-AC_Result
-AC_generateToken
-(
+AC_Result AC_generateToken(
 	AC_Token **tok_ptr,
 	char *lexeme,
 	uint32_t ln_num,
@@ -181,9 +169,7 @@ AC_generateToken
 //
 // Print the contents of a token to the screen.
 //
-AC_Result 
-AC_printToken
-(
+AC_Result AC_printToken(
 	AC_Token *token
 )
 {
@@ -203,9 +189,7 @@ AC_printToken
 // Returns zero if '\0' found
 // Returns one if there are still more characters to parse
 //
-AC_Result 
-AC_getToken
-(
+AC_Result AC_getToken(
 	char *ptr, 
 	AC_Token **token_ptr
 ) 
@@ -214,7 +198,7 @@ AC_getToken
 	static uint32_t char_num = 0;
 	static char *next_ptr;
 
-	char lexeme[AC_MAX_LEXEME_SIZE] = {};
+	char lexeme[AC_MAX_LEXEME_SIZE];
 	char curr_char;
 	char peek_char;
 
@@ -451,9 +435,7 @@ AC_getToken
 //
 // Returns AC_Return_Type Enum
 //
-AC_Result 
-AC_readFile
-(
+AC_Result AC_readFile(
 	const char *file_name, 
 	char **char_buffer, 
 	size_t *size
@@ -503,9 +485,7 @@ AC_readFile
 // Concatenates a character 'new_char' to the end of 'lexeme'
 // Increments next_ptr, updates new_char value, and increments char_count
 //
-static AC_Result 
-AC_lexCatChar
-(
+static AC_Result AC_lexCatChar(
 	char *lexeme,
 	char *new_char, 
 	char **next_ptr, 
@@ -523,9 +503,7 @@ AC_lexCatChar
 //
 // AC_getToken Helper Function
 //
-static AC_Result
-AC_isNumeric
-(
+static AC_Result AC_isNumeric(
 	char check_char
 )
 {

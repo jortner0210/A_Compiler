@@ -27,18 +27,14 @@ typedef struct AC_Token
 
 } AC_Token;
 
-AC_Result
-AC_generateToken
-(
+AC_Result AC_generateToken(
 	AC_Token **tok_ptr,
 	char *lexeme,
 	uint32_t ln_num,
 	uint32_t char_num
 );
 
-AC_Result
-AC_printToken
-(
+AC_Result AC_printToken(
 	AC_Token *token
 );
 
@@ -60,76 +56,56 @@ typedef struct AC_TokenStream
 
 } AC_TokenStream;
 
-AC_Result
-AC_initTokenStream
-(
+AC_Result AC_initTokenStream(
 	AC_TokenStream **token_stream
 );
 
-AC_Result
-AC_destroyTokenStream
-(
+AC_Result AC_destroyTokenStream(
 	AC_TokenStream *token_stream
 );
 
-AC_Result
-AC_appendTokenStream
-(
+AC_Result AC_appendTokenStream(
 	AC_TokenStream *token_stream,
 	AC_Token *token
 );
 
-AC_Result
-AC_printTokenStream
-(
+AC_Result AC_printTokenStream(
 	AC_TokenStream *token_stream
 );
 
 ///////////////////////////// MAIN SCANNER API
 
-AC_Result 
-AC_sourceToTokenStream
-(
+AC_Result AC_sourceToTokenStream(
 	const char *file_name,
 	AC_TokenStream **token_stream
 );
 
-//AC_Result
-//AC_destroyTokenStream
-//(
+//AC_Result AC_destroyTokenStream(
 //
 //);
 
 
 ///////////////////////////// SCANNER HELPER FUNCTIONS
 
-AC_Result 
-AC_getToken
-(
+AC_Result AC_getToken(
 	char *ptr, 
 	AC_Token **token_ptr
 );
 
-AC_Result 
-AC_readFile
-(
+AC_Result AC_readFile(
 	const char *file_name, 
 	char **char_buffer, 
 	size_t *size
 );
 
-static AC_Result 
-AC_lexCatChar
-(
+static AC_Result AC_lexCatChar(
 	char *lexeme,
 	char *new_char, 
 	char **next_ptr, 
 	uint32_t *char_count
 );
 
-static AC_Result
-AC_isNumeric
-(
+static AC_Result AC_isNumeric(
 	char check_char
 );
 

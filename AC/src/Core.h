@@ -15,9 +15,7 @@ typedef enum
 } AC_Result;
 
 
-void 
-AC_printResult
-(
+void AC_printResult(
 	AC_Result result
 );
 

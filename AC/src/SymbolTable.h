@@ -131,24 +131,18 @@ typedef struct AC_TokenInfo
 
 // TO DO: IMPLEMENT GET TOKEN TYPE AND GET TOKEN FAMILY
 
-static AC_Result
-AC_getTokenType
-(
+static AC_Result AC_getTokenType(
 	const char *lexeme,
 	AC_TokenType *tok_type
 );
 
-static AC_Result
-AC_getTokenFamily
-(
+static AC_Result AC_getTokenFamily(
 	AC_TokenType tok_type,
 	AC_TokenFamily *tok_family,
 	uint8_t *is_keyword
 );
 
-AC_Result 
-AC_getTokenInfo
-(
+AC_Result AC_getTokenInfo(
 	const char *lexeme, 
 	AC_TokenInfo *tok_info
 );
@@ -158,8 +152,6 @@ AC_getTokenInfo
 //  - Array of linked lists
 //  - Hash Function generates index in array
 //
-
-
 
 ///////////////////////////// SYMBOL TABLE TYPES
 
@@ -184,33 +176,24 @@ extern AC_SymbolTableItem *_ac_hash_array[AC_MAX_HASH_ARRAY_SIZE];
 
 ///////////////////////////// SYMBOL TABLE ITEMS FUNCTION
 
-AC_Result
-AC_printSymbolTableItem
-(
+AC_Result AC_printSymbolTableItem(
 	AC_SymbolTableItem *item
 );
 
 ///////////////////////////// SYMBOL TABLE FUNCTIONS
 
-AC_Result 
-AC_initSymbolTable();
+AC_Result AC_initSymbolTable();
 
-AC_Result 
-AC_destroySymbolTable();
+AC_Result AC_destroySymbolTable();
 
-AC_Result
-AC_printSymbolTable();
+AC_Result AC_printSymbolTable();
 
-AC_Result 
-AC_hashStringSymbolTable
-(
+AC_Result AC_hashStringSymbolTable(
 	char *key,
 	uint32_t *idx
 );
 
-AC_Result
-AC_insertSymbolTable
-(
+AC_Result AC_insertSymbolTable(
 	char *key,
 	AC_TokenType tok_type,
 	AC_TokenFamily tok_family

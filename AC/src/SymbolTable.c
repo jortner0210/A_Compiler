@@ -3,9 +3,7 @@
 
 ///////////////////////////// TOKEN FUNCTIONS
 
-static AC_Result
-AC_getTokenType
-(
+static AC_Result AC_getTokenType(
 	const char *lexeme,
 	AC_TokenType *tok_type
 )
@@ -92,9 +90,7 @@ AC_getTokenType
 	}
 }
 
-static AC_Result
-AC_getTokenFamily
-(
+static AC_Result AC_getTokenFamily(
 	AC_TokenType tok_type,
 	AC_TokenFamily *tok_family,
 	uint8_t *is_keyword
@@ -184,9 +180,7 @@ AC_getTokenFamily
 	}
 }
 
-AC_Result 
-AC_getTokenInfo
-(
+AC_Result AC_getTokenInfo(
 	const char *lexeme,
 	AC_TokenInfo *tok_info
 )
@@ -204,9 +198,7 @@ AC_SymbolTableItem *_ac_hash_array[AC_MAX_HASH_ARRAY_SIZE] = {NULL};
 
 ///////////////////////////// SYMBOL TABLE FUNCTIONS
 
-AC_Result
-AC_printSymbolTableItem
-(
+AC_Result AC_printSymbolTableItem(
 	AC_SymbolTableItem *item
 )
 {
@@ -221,8 +213,7 @@ AC_printSymbolTableItem
 //
 // Initialize the Symbol Table
 //
-AC_Result 
-AC_initSymbolTable()
+AC_Result AC_initSymbolTable()
 {
 	//for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) 
 	//	_ac_hash_array[i] = NULL;
@@ -236,8 +227,7 @@ AC_initSymbolTable()
 	AC_insertSymbolTable("Test_ID", AC_IF, AC_LOOP);
 }
 
-AC_Result 
-AC_destroySymbolTable()
+AC_Result AC_destroySymbolTable()
 {
 	for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) {
 		if (_ac_hash_array[i] != NULL) {
@@ -256,8 +246,7 @@ AC_destroySymbolTable()
 //
 // Print the contents of the Symbol Table to the terminal
 // 
-AC_Result
-AC_printSymbolTable()
+AC_Result AC_printSymbolTable()
 {
 	printf("/----- AC Symbol Table -----/\n\n");
 	for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) {
@@ -281,9 +270,7 @@ AC_printSymbolTable()
 // TO DO: change sum of chars to something else
 //		  - I think sum won't distribute evenly (use xor)
 //
-AC_Result
-AC_hashStringSymbolTable
-(
+AC_Result AC_hashStringSymbolTable(
 	char *key,
 	uint32_t *idx
 )
@@ -300,9 +287,7 @@ AC_hashStringSymbolTable
 //
 // Add Token to Symbol Table
 //
-AC_Result
-AC_insertSymbolTable
-(
+AC_Result AC_insertSymbolTable(
 	char *key,
 	AC_TokenType tok_type,
 	AC_TokenFamily tok_family
