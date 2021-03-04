@@ -71,9 +71,6 @@ AC_Result AC_printToken(
 	printf("/////////////////////////////\n");
 }
 
-
-
-
 ///////////////////////////// TOKEN STREAM FUNCTIONS
 
 //
@@ -127,6 +124,26 @@ AC_Result AC_destroyTokenStream(
 }
 
 //
+// Get a pointer to the next token in a stream.
+// The 'next' pointer is held in the state of the token_stream.
+//
+AC_Result AC_nextTokenTokenStream(
+	AC_TokenStream *token_stream,
+	AC_TokenStreamNode **stream_node
+)
+{
+	if (token_stream->next != NULL) {
+		(*stream_node) = token_stream->next;
+		token_stream->next = token_stream->next->next;
+		return AC_SUCCESS;
+	}
+	else {
+		(*stream_node) = NULL;
+		return AC_END_OF_TOKEN_STREAM;
+	}
+}
+
+//
 // Add a new node to the token stream with data
 // set to the passed AC_Token
 //
@@ -165,6 +182,16 @@ AC_Result AC_printTokenStream(
 		AC_printToken(print_node->data);
 		print_node = print_node->next;
 	}
+}
+
+//
+// Sets the token_stream next member to the token_stream head memeber
+//
+AC_Result AC_resetTokenStream(
+	AC_TokenStream *token_stream
+)
+{
+	token_stream->next = token_stream->head;
 }
 
 //

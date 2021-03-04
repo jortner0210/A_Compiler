@@ -81,12 +81,21 @@ AC_Result AC_destroyTokenStream(
 	AC_TokenStream *token_stream
 );
 
+AC_Result AC_nextTokenTokenStream(
+	AC_TokenStream *token_stream,
+	AC_TokenStreamNode **stream_node
+);
+
 AC_Result AC_appendTokenStream(
 	AC_TokenStream *token_stream,
 	AC_Token *token
 );
 
 AC_Result AC_printTokenStream(
+	AC_TokenStream *token_stream
+);
+
+AC_Result AC_resetTokenStream(
 	AC_TokenStream *token_stream
 );
 
