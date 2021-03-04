@@ -1,8 +1,80 @@
 #include "Core.h"
 #include "Common.h"
 #include "Scanner.h"
+#include "SymbolTable.h"
 
-///////////////////////////// TOKEN STREAM API
+///////////////////////////// TOKEN TYPE FUNCTIONS
+
+AC_Result AC_tokenTypeToString(
+	AC_TokenType tok_type,
+	char *string
+)
+{
+	switch (tok_type)
+	{
+		case KEYWORD:	 strcpy(string, "Keyword");	   break;	
+		case IDENTIFIER: strcpy(string, "Identifier"); break;
+		case OPERATOR: 	 strcpy(string, "Operator");   break;
+		case CONSTANT:	 strcpy(string, "Constant");   break;
+		case SEPARATOR:	 strcpy(string, "Separator");  break;
+		default:	     strcpy(string, "Not Found");
+	}
+	return AC_SUCCESS;
+}
+
+///////////////////////////// TOKEN STRUCT FUNCTIONS
+
+//
+// Uses malloc to generate a new AC_Token struct, filling it 
+// with the passed data and using AC_getTokenInfo to get
+// information based on the lexeme. 
+//
+AC_Result AC_generateToken(
+	AC_Token **tok_ptr,
+	char *lexeme,
+	uint32_t ln_num,
+	uint32_t char_num,
+	AC_TokenType tok_type
+)
+{
+	static uint32_t tok_id = 0;
+
+	AC_Token *new_token_ptr = (AC_Token *)malloc(sizeof(AC_Token));
+	new_token_ptr->id 		= tok_id;
+	new_token_ptr->ln_num 	= ln_num;
+	new_token_ptr->char_num = char_num;
+	new_token_ptr->tok_type = tok_type;
+
+	//AC_getTokenInfo(lexeme, &new_token_ptr->info);
+	strcpy(new_token_ptr->lexeme, lexeme);
+
+	(*tok_ptr) = new_token_ptr;
+
+	tok_id++;
+
+	return AC_SUCCESS;
+}
+
+//
+// Print the contents of a token to the screen.
+//
+AC_Result AC_printToken(
+	AC_Token *token
+)
+{
+	char tok_type_str[100];
+	AC_tokenTypeToString(token->tok_type, tok_type_str);
+	printf("Token id: %d\n", token->id);
+	printf("Type    : %d, %s\n", token->tok_type, tok_type_str);
+	printf("Lexeme  : %s\n", token->lexeme);
+	printf("Line #%d, Char #%d\n", token->ln_num, token->char_num);
+	printf("/////////////////////////////\n");
+}
+
+
+
+
+///////////////////////////// TOKEN STREAM FUNCTIONS
 
 //
 // Allocate memory for the Token Stream struct and initialize its values to NULL.
@@ -87,14 +159,13 @@ AC_Result AC_printTokenStream(
 	AC_TokenStream *token_stream
 )
 {
+	printf("/----- AC Token Stream -----/\n\n");
 	AC_TokenStreamNode *print_node = token_stream->head;
 	while (print_node != NULL) {
 		AC_printToken(print_node->data);
 		print_node = print_node->next;
 	}
 }
-
-///////////////////////////// MAIN SCANNER API
 
 //
 // Converts a raw source file into a stream of identified tokens
@@ -138,58 +209,12 @@ AC_Result AC_sourceToTokenStream(
 ///////////////////////////// SCANNER HELPER FUNCTIONS
 
 //
-// Uses malloc to generate a new AC_Token struct, filling it 
-// with the passed data and using AC_getTokenInfo to get
-// information based on the lexeme. 
-//
-AC_Result AC_generateToken(
-	AC_Token **tok_ptr,
-	char *lexeme,
-	uint32_t ln_num,
-	uint32_t char_num
-)
-{
-	static uint32_t tok_id = 0;
-
-	AC_Token *new_token_ptr = (AC_Token *)malloc(sizeof(AC_Token));
-	new_token_ptr->id 		= tok_id;
-	new_token_ptr->ln_num 	= ln_num;
-	new_token_ptr->char_num = char_num;
-
-	AC_getTokenInfo(lexeme, &new_token_ptr->info);
-	strcpy(new_token_ptr->lexeme, lexeme);
-
-	(*tok_ptr) = new_token_ptr;
-
-	tok_id++;
-
-	return AC_SUCCESS;
-}
-
-//
-// Print the contents of a token to the screen.
-//
-AC_Result AC_printToken(
-	AC_Token *token
-)
-{
-	printf("Token id: %d\n", token->id);
-	printf("Family  : %d\n", token->info.tok_family);
-	printf("Type    : %d\n", token->info.tok_type);
-	printf("Lexeme  : %s\n", token->lexeme);
-	printf("Line #%d, Char #%d\n", token->ln_num, token->char_num);
-	printf("/////////////////////////////\n");
-}
-
-///////////////////////////// SCANNER FUNCTIONS
-
-//
 // Split string into tokens 
 // 
 // Returns zero if '\0' found
 // Returns one if there are still more characters to parse
 //
-AC_Result AC_getToken(
+static AC_Result AC_getToken(
 	char *ptr, 
 	AC_Token **token_ptr
 ) 
@@ -201,6 +226,7 @@ AC_Result AC_getToken(
 	char lexeme[AC_MAX_LEXEME_SIZE];
 	char curr_char;
 	char peek_char;
+	AC_TokenType tok_type;
 
 	// Set static pointer
 	if (ptr != NULL) { 
@@ -234,18 +260,91 @@ AC_Result AC_getToken(
 	switch (curr_char)
 	{
 		//
+		// SEPARATOR
+		//
+		case ';':
+			lexeme[1] = '\0';
+			tok_type = SEPARATOR;
+			break;
+
+		//
+		// OPERATOR
+		//
+		case '=':
+			lexeme[1] = '\0';
+			tok_type = OPERATOR;
+			break;
+
+		//
+		// CONSTANT: integers and floats
+		//
+		case '0': case '1': case '2': case '3': case '4': 
+		case '5': case '6': case '7': case '8': case '9':
+			while (AC_isNumeric(peek_char) == AC_SUCCESS) {
+				AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
+				char_num++;
+			}
+			if (peek_char == '.') {
+				AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
+				char_num++;
+				while (AC_isNumeric(peek_char) == AC_SUCCESS){
+					AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
+			 		char_num++; 
+				}
+			}
+			lexeme[char_count] = '\0';
+			tok_type = CONSTANT;
+			break;
+
+		//
+		// KEYWORD/IDENTIFIER
+		//
+		case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':	
+		case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':	
+		case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':	
+		case 's': case 't': case 'u': case 'v': case 'w': case 'x':	
+		case 'y': case 'z': 	
+		
+		case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':	
+		case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':	
+		case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':	
+		case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':	
+		case 'Y': case 'Z':
+
+		case '_':
+			while ((peek_char >= 'a' && peek_char <= 'z') ||
+				   (peek_char >= 'A' && peek_char <= 'Z') ||
+				   (peek_char >= '0' && peek_char <= '9') ||
+				   (peek_char == '_')) {
+				AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
+				char_num++;
+			}
+			lexeme[char_count] = '\0';
+
+			AC_SymbolTableItem *st_lookup;
+			AC_Result kw_res = AC_getItemSymbolTable(lexeme, &st_lookup);
+			if (kw_res == AC_SYMBOL_TABLE_SYMBOL_FOUND)
+				tok_type = st_lookup->tok_type;
+			else
+				tok_type = IDENTIFIER;	
+			break;	
+		
+
+		/*
+		//
 		// SINGLE CHARACTER LEXEMES 
 		//
-		case '(':
-		case ')':
+		//case '(':
+		//case ')':
 		case ';':
-		case ':':
-		case '[':
-		case ']':
-		case '{':
-		case '}':
-		case ',':
+		//case ':':
+		//case '[':
+		//case ']':
+		//case '{':
+		//case '}':
+		//case ',':
 			lexeme[1] = '\0';
+			tok_type = SEPARATOR;
 			break;
 		
 		//
@@ -423,9 +522,10 @@ AC_Result AC_getToken(
 			}
 			lexeme[char_count] = '\0';
 			break;
+		*/
 	}
 
-	AC_generateToken(token_ptr, lexeme, ln_num, char_start_num);
+	AC_generateToken(token_ptr, lexeme, ln_num, char_start_num, tok_type);
 
 	return AC_SUCCESS;
 }
@@ -435,7 +535,7 @@ AC_Result AC_getToken(
 //
 // Returns AC_Return_Type Enum
 //
-AC_Result AC_readFile(
+static AC_Result AC_readFile(
 	const char *file_name, 
 	char **char_buffer, 
 	size_t *size

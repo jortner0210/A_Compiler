@@ -1,8 +1,172 @@
 #include "Core.h"
 #include "SymbolTable.h"
 
+///////////////////////////// SYMBOL TABLE ITEM STRUCT FUNCTIONS
+
+AC_Result AC_printSymbolTableItem(
+	AC_SymbolTableItem *item
+)
+{
+	printf("Key         : %s\n", item->key);
+	printf("Token Type  : %d\n", item->tok_type);
+	printf("/////////////////////////////\n\n"); 
+}
+
+
+///////////////////////////// SYMBOL TABLE GLOBAL STATE
+
+AC_SymbolTableItem *_ac_st_array[AC_MAX_HASH_ARRAY_SIZE] = {NULL};
+
+
+///////////////////////////// SYMBOL TABLE FUNCTIONS
+
+//
+// Initialize the Symbol Table
+//
+AC_Result AC_initSymbolTable()
+{
+	AC_insertSymbolTable("int", KEYWORD);
+}
+
+AC_Result AC_destroySymbolTable()
+{
+	for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) {
+		if (_ac_st_array[i] != NULL) {
+			AC_SymbolTableItem *del_item = _ac_st_array[i];
+			AC_SymbolTableItem *next_item;
+			while (del_item != NULL) {
+				next_item = del_item->next;
+				free(del_item);
+				del_item = next_item;
+			}
+			_ac_st_array[i] = NULL;
+		}
+	}	
+}
+
+//
+// Print the contents of the Symbol Table to the terminal
+// 
+AC_Result AC_printSymbolTable()
+{
+	printf("/----- AC Symbol Table -----/\n\n");
+	for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) {
+		if( _ac_st_array[i] != NULL) {
+			AC_SymbolTableItem *item_print = _ac_st_array[i];;
+			
+			while (item_print != NULL) {
+				AC_printSymbolTableItem(item_print);
+				item_print = item_print->next;
+			}
+		}
+		else {
+			printf("Idx: %d, Val: %p\n", i, _ac_st_array[i]);
+			printf("/////////////////////////////\n\n"); 
+		}
+	}
+}
+
+//
+// Hash function for symbol table
+// TO DO: change sum of chars to something else
+//		  - I think sum won't distribute evenly (use xor?)
+//
+AC_Result AC_hashStringSymbolTable(
+	char *key,
+	uint32_t *idx
+)
+{
+	size_t key_len = strlen(key);
+	uint32_t sum   = 0;
+	// Cast chars to int and sum 
+	for (size_t i = 0; i < key_len; i++) {
+		sum += (uint8_t)key[i];
+	}
+	(*idx) = sum % AC_MAX_HASH_ARRAY_SIZE;
+}
+
+//
+// Add Token to Symbol Table
+//
+AC_Result AC_insertSymbolTable(
+	char *key,
+	AC_TokenType tok_type
+)
+{
+	uint32_t hash_arr_idx;
+	
+	AC_hashStringSymbolTable(key, &hash_arr_idx);
+	AC_SymbolTableItem *new_item = (AC_SymbolTableItem *)malloc(sizeof(AC_SymbolTableItem));
+	
+	strcpy(new_item->key, key);
+	new_item->tok_type = tok_type;
+	new_item->next 	   = NULL;
+	
+	if (_ac_st_array[hash_arr_idx] == NULL) {
+		_ac_st_array[hash_arr_idx] = new_item;		
+	}	
+	else {
+		AC_SymbolTableItem *curr_item = _ac_st_array[hash_arr_idx];
+		while (curr_item->next != NULL)
+			curr_item = curr_item->next;
+		curr_item->next = new_item;
+	}
+}
+
+AC_Result AC_inSymbolTable(
+	char *key
+)
+{
+	uint32_t hash_arr_idx;
+	uint32_t found = 0;
+
+	AC_hashStringSymbolTable(key, &hash_arr_idx);
+
+	if (_ac_st_array[hash_arr_idx] == NULL) {
+		return AC_SYMBOL_TABLE_SYMBOL_NOT_FOUND;
+	}
+	AC_SymbolTableItem *curr_item = _ac_st_array[hash_arr_idx];
+	while (curr_item != NULL) {
+		if (strcmp(key, curr_item->key) == 0) {
+			found = 1;
+			break;
+		}
+		curr_item = curr_item->next;
+	}
+	if (found)
+		return AC_SYMBOL_TABLE_SYMBOL_FOUND;
+	else
+		return AC_SYMBOL_TABLE_SYMBOL_NOT_FOUND;
+}
+
+AC_Result AC_getItemSymbolTable(
+	char *key,
+	AC_SymbolTableItem **ret_item
+)
+{
+	if (AC_inSymbolTable(key) == AC_SYMBOL_TABLE_SYMBOL_FOUND) {
+		uint32_t hash_arr_idx;
+
+		AC_hashStringSymbolTable(key, &hash_arr_idx);
+
+		AC_SymbolTableItem *curr_item = _ac_st_array[hash_arr_idx];
+		while (curr_item != NULL) {
+			if (strcmp(key, curr_item->key) == 0) {
+				(*ret_item) = curr_item;
+				return AC_SYMBOL_TABLE_SYMBOL_FOUND;
+			}
+			curr_item = curr_item->next;
+		}
+
+	}
+	return AC_SYMBOL_TABLE_SYMBOL_NOT_FOUND;
+}
+
+
 ///////////////////////////// TOKEN FUNCTIONS
 
+
+/*
 static AC_Result AC_getTokenType(
 	const char *lexeme,
 	AC_TokenType *tok_type
@@ -52,6 +216,9 @@ static AC_Result AC_getTokenType(
 		// BIT WISE OPERATORS 
 		else if (strcmp(lexeme, "<<") == 0) (*tok_type) = AC_BIT_LEFT_SHIFT;
 		else if (strcmp(lexeme, ">>") == 0) (*tok_type) = AC_BIT_RIGHT_SHIFT;
+
+		// USER DEFINED IDENTIFIER
+		else (*tok_type) = AC_USER_DEFINED_WORD;
 	}
 	else {
 		switch ((*lexeme))
@@ -86,8 +253,12 @@ static AC_Result AC_getTokenType(
 			case '|': (*tok_type) = AC_BIT_OR;   break;
 			case '^': (*tok_type) = AC_BIT_XOR;  break;
 			case '~': (*tok_type) = AC_BIT_FLIP; break;
+			
+			// USER DEFINED IDENTIFIER
+			default: (*tok_type) = AC_USER_DEFINED_WORD; break;
 		}
 	}
+	
 }
 
 static AC_Result AC_getTokenFamily(
@@ -189,127 +360,4 @@ AC_Result AC_getTokenInfo(
 	AC_getTokenType(lexeme, &tok_info->tok_type);
 	AC_getTokenFamily(tok_info->tok_type, &tok_info->tok_family, &tok_info->is_keyword);
 	return AC_SUCCESS;
-}
-
-
-///////////////////////////// SYMBOL TABLE GLOBAL STATE
-
-AC_SymbolTableItem *_ac_hash_array[AC_MAX_HASH_ARRAY_SIZE] = {NULL};
-
-///////////////////////////// SYMBOL TABLE FUNCTIONS
-
-AC_Result AC_printSymbolTableItem(
-	AC_SymbolTableItem *item
-)
-{
-	printf("Key         : %s\n", item->key);
-	printf("Token Type  : %d\n", item->info.tok_type);
-	printf("Token Family: %d\n", item->info.tok_type);
-	printf("/////////////////////////////\n\n"); 
-}
-
-///////////////////////////// SYMBOL TABLE FUNCTIONS
-
-//
-// Initialize the Symbol Table
-//
-AC_Result AC_initSymbolTable()
-{
-	//for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) 
-	//	_ac_hash_array[i] = NULL;
-
-	AC_insertSymbolTable("T", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Te", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Tes", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Test", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Test_", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Test_I", AC_IF, AC_LOOP);
-	AC_insertSymbolTable("Test_ID", AC_IF, AC_LOOP);
-}
-
-AC_Result AC_destroySymbolTable()
-{
-	for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) {
-		if (_ac_hash_array[i] != NULL) {
-			AC_SymbolTableItem *del_item = _ac_hash_array[i];
-			AC_SymbolTableItem *next_item;
-			while (del_item != NULL) {
-				next_item = del_item->next;
-				free(del_item);
-				del_item = next_item;
-			}
-			_ac_hash_array[i] = NULL;
-		}
-	}	
-}
-
-//
-// Print the contents of the Symbol Table to the terminal
-// 
-AC_Result AC_printSymbolTable()
-{
-	printf("/----- AC Symbol Table -----/\n\n");
-	for (int i = 0; i < AC_MAX_HASH_ARRAY_SIZE; i++) {
-		if( _ac_hash_array[i] != NULL) {
-			AC_SymbolTableItem *item_print = _ac_hash_array[i];;
-			
-			while (item_print != NULL) {
-				AC_printSymbolTableItem(item_print);
-				item_print = item_print->next;
-			}
-		}
-		else {
-			printf("Idx: %d, Val: %p\n", i, _ac_hash_array[i]);
-			printf("/////////////////////////////\n\n"); 
-		}
-	}
-}
-
-//
-// Hash function for symbol table
-// TO DO: change sum of chars to something else
-//		  - I think sum won't distribute evenly (use xor)
-//
-AC_Result AC_hashStringSymbolTable(
-	char *key,
-	uint32_t *idx
-)
-{
-	size_t key_len = strlen(key);
-	uint32_t sum   = 0;
-	// Cast chars to int and sum 
-	for (size_t i = 0; i < key_len; i++) {
-		sum += (uint8_t)key[i];
-	}
-	(*idx) = sum % AC_MAX_HASH_ARRAY_SIZE;
-}
-
-//
-// Add Token to Symbol Table
-//
-AC_Result AC_insertSymbolTable(
-	char *key,
-	AC_TokenType tok_type,
-	AC_TokenFamily tok_family
-)
-{
-	uint32_t hash_arr_idx;
-	
-	AC_hashStringSymbolTable(key, &hash_arr_idx);
-	AC_SymbolTableItem *new_item = (AC_SymbolTableItem *)malloc(sizeof(AC_SymbolTableItem));
-	
-	strcpy(new_item->key, key);
-	new_item->info.tok_type   = tok_type;
-	new_item->info.tok_family = tok_family;	
-	new_item->next 		 	  = NULL;
-	
-	if (_ac_hash_array[hash_arr_idx] == NULL) {
-		_ac_hash_array[hash_arr_idx] = new_item;		
-	}	
-	else {
-		AC_SymbolTableItem *curr_item = _ac_hash_array[hash_arr_idx];
-		while (curr_item->next != NULL)
-			curr_item = curr_item->next;
-		curr_item->next = new_item;
-	}
-}
+}*/
