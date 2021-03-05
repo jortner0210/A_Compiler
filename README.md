@@ -2,9 +2,8 @@
 
 ## Current State of the Project:
     - Scanner       (COMPLETED)
-    - Windows Build (ACTIVE)
-    - Symbol Table  (ACTIVE)
-    - Parser        (ON DECK)
+    - Symbol Table  (COMPLETED)
+    - Parser        (ACTIVE)
 
 ## Functionality:
     - 03/03/2021: 
