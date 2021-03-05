@@ -44,7 +44,32 @@ void AC_printResult(
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
 
-#define AC_DEBUG_TRACE_FMT(type, fmt, ...)                       \
+
+#define AC_SCANNER_CHAR_ERROR(wrong_char, line_num, char_num) 								 \
+	do {                                                									 \
+        printf("%s", AC_NOT_GOOD);                      									 \
+        printf("Scanning Error: Unidentified char: %c, line number: %d, char number: %d\n",  \
+			   wrong_char, 																	 \
+			   line_num, 																	 \
+			   char_num); 																	 \
+        printf("%s\n", KNRM);                          										 \
+        exit(EXIT_FAILURE);                             									 \
+    } while (0);
+
+
+#define AC_PARSE_ERROR_MSG(msg, line_num, char_num)        					   \
+    do {                                                					   \
+        printf("%s", AC_NOT_GOOD);                      					   \
+        printf("Parse Error: Message: %s, line number: %d, char number: %d\n", \
+			   msg, 														   \
+			   line_num, 													   \
+			   char_num); 													   \
+        printf("%s\n", KNRM);                          						   \
+        exit(EXIT_FAILURE);                             					   \
+    } while (0);
+
+
+#define AC_DEBUG_TRACE_FMT(type, fmt, ...)                 \
     do {                                                   \
         if (DEBUG_TEST) {                                  \
             printf("%s", type);                            \
@@ -61,15 +86,19 @@ void AC_printResult(
     AC_DEBUG_TRACE_FMT(type, "%s", arg)
 
 	
-#define AC_EXIT_FAILURE(msg)                            \
+#define AC_EXIT_FAILURE_FMT(fmt, ...)					\
     do {                                                \
         printf("%s", AC_NOT_GOOD);						\
-        printf("AC EXIT FAILURE -- %s:%d:%s() -- " msg, \
+        printf("AC EXIT FAILURE -- %s:%d:%s() -- " fmt, \
                __FILE__,                                \
                __LINE__,                                \
-               __func__);                               \
+               __func__,								\
+			   __VA_ARGS__);                            \
         printf("%s\n", KNRM);                           \
         exit(EXIT_FAILURE);                             \
     } while (0); 
+
+#define AC_EXIT_FAILURE(msg)\
+    AC_EXIT_FAILURE_FMT("%s", msg)
 
 #endif

@@ -42,11 +42,11 @@ AC_Result AC_isProgram(
 	AC_TokenStream *token_stream
 );
 
-AC_Result AC_isStatementList(
+AC_Result AC_isExpression(
 	AC_TokenStream *token_stream
 );
 
-AC_Result AC_isStatement(
+AC_Result AC_isTerm(
 	AC_TokenStream *token_stream
 );
 

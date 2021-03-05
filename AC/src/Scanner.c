@@ -12,10 +12,8 @@ AC_Result AC_tokenTypeToString(
 {
 	switch (tok_type)
 	{
-		case AC_KEYWORD:	strcpy(string, "Keyword");	     break;	
-		case AC_IDENTIFIER: strcpy(string, "Identifier");    break;
 		case AC_OPERATOR: 	strcpy(string, "Operator");      break;
-		case AC_CONSTANT:	strcpy(string, "Constant");      break;
+		case AC_FACTOR: 	strcpy(string, "Factor");        break;
 		case AC_SEMI_COLON:	strcpy(string, "Semi Colon");    break;
 		case AC_R_BRACKET:	strcpy(string, "Right Bracket"); break;
 		case AC_L_BRACKET:	strcpy(string, "Left Bracket");  break;
@@ -93,7 +91,9 @@ AC_Result AC_initTokenStream(
 	(*token_stream)->head = NULL;
 	(*token_stream)->tail = NULL;
 	(*token_stream)->next = (*token_stream)->head;
-	(*token_stream)->end_reached = 1;
+	(*token_stream)->end_reached   = 1;
+	(*token_stream)->curr_line_num = 0;
+	(*token_stream)->curr_char_num = 0;
 }
 
 //
@@ -140,6 +140,8 @@ AC_Result AC_nextTokenTokenStream(
 	if (token_stream->next != NULL) {
 		(*token_ptr) = token_stream->next->data;
 		token_stream->next = token_stream->next->next;
+		token_stream->curr_line_num = (*token_ptr)->ln_num;
+		token_stream->curr_char_num = (*token_ptr)->char_num;
 		return AC_SUCCESS;
 	}
 	else {
@@ -147,6 +149,14 @@ AC_Result AC_nextTokenTokenStream(
 		token_stream->end_reached = 1;
 		return AC_END_OF_TOKEN_STREAM;
 	}
+}
+
+AC_Result AC_backTrackTokenStream(
+	AC_TokenStream *token_stream
+)
+{
+	AC_DEBUG_TRACE_ARG(AC_FINE, "Token Stream Backtracking")
+	token_stream->next = token_stream->next->prev;	
 }
 
 //
@@ -160,6 +170,7 @@ AC_Result AC_appendTokenStream(
 {
 	AC_TokenStreamNode *new_node = (AC_TokenStreamNode *)malloc(sizeof(AC_TokenStreamNode));
 	new_node->next = NULL;
+	new_node->prev = NULL;
 	new_node->data = token;
 	
 	token_stream->end_reached = 0;
@@ -172,6 +183,7 @@ AC_Result AC_appendTokenStream(
 		token_stream->next = token_stream->head;
 	}
 	else {
+		new_node->prev = token_stream->tail;
 		token_stream->tail->next = new_node;
 		token_stream->tail = new_node;
 	}
@@ -322,7 +334,10 @@ static AC_Result AC_getToken(
 		//
 		// OPERATOR
 		//
-		case '=':
+		case '+':
+		case '-':
+		case '/':
+		case '*':
 			lexeme[1] = '\0';
 			tok_type = AC_OPERATOR;
 			break;
@@ -345,41 +360,43 @@ static AC_Result AC_getToken(
 				}
 			}
 			lexeme[char_count] = '\0';
-			tok_type = AC_CONSTANT;
+			tok_type = AC_FACTOR;
+			break;
+
+		default:
+			AC_SCANNER_CHAR_ERROR(curr_char, ln_num, char_num)
 			break;
 
 		//
 		// KEYWORD/IDENTIFIER
 		//
-		case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':	
-		case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':	
-		case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':	
-		case 's': case 't': case 'u': case 'v': case 'w': case 'x':	
-		case 'y': case 'z': 	
-		
-		case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':	
-		case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':	
-		case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':	
-		case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':	
-		case 'Y': case 'Z':
-
-		case '_':
-			while ((peek_char >= 'a' && peek_char <= 'z') ||
-				   (peek_char >= 'A' && peek_char <= 'Z') ||
-				   (peek_char >= '0' && peek_char <= '9') ||
-				   (peek_char == '_')) {
-				AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
-				char_num++;
-			}
-			lexeme[char_count] = '\0';
-
-			AC_SymbolTableItem *st_lookup;
-			AC_Result kw_res = AC_getItemSymbolTable(lexeme, &st_lookup);
-			if (kw_res == AC_SYMBOL_TABLE_SYMBOL_FOUND)
-				tok_type = st_lookup->tok_type;
-			else
-				tok_type = AC_IDENTIFIER;	
-			break;	
+		//case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':	
+		//case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':	
+		//case 'm': case 'n': case 'o': case 'p': case 'q': case 'r':	
+		//case 's': case 't': case 'u': case 'v': case 'w': case 'x':	
+		//case 'y': case 'z': 	
+		//case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':	
+		//case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':	
+		//case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':	
+		//case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':	
+		//case 'Y': case 'Z':
+		//case '_':
+		//	while ((peek_char >= 'a' && peek_char <= 'z') ||
+		//		   (peek_char >= 'A' && peek_char <= 'Z') ||
+		//		   (peek_char >= '0' && peek_char <= '9') ||
+		//		   (peek_char == '_')) {
+		//		AC_lexCatChar(lexeme, &peek_char, &next_ptr, &char_count);
+		//		char_num++;
+		//	}
+		//	lexeme[char_count] = '\0';
+//
+		//	AC_SymbolTableItem *st_lookup;
+		//	AC_Result kw_res = AC_getItemSymbolTable(lexeme, &st_lookup);
+		//	if (kw_res == AC_SYMBOL_TABLE_SYMBOL_FOUND)
+		//		tok_type = st_lookup->tok_type;
+		//	else
+		//		tok_type = AC_IDENTIFIER;	
+		//	break;	
 		
 
 		/*

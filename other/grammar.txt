@@ -1,0 +1,7 @@
+Program    -> { Expression } eof
+Expression -> Term op Term ;
+Term       -> factor
+Term       -> Term op factor 
+
+op     -> +
+factor -> positive integers and floats

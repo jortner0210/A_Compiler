@@ -14,10 +14,8 @@
 
 typedef enum AC_TokenType
 {
-	AC_KEYWORD,	
-	AC_IDENTIFIER, // variable name
-	AC_OPERATOR,   // +,=,...
-	AC_CONSTANT,   // 100
+	AC_OPERATOR,   
+	AC_FACTOR,     
 	AC_SEMI_COLON,
 	AC_L_BRACKET,
 	AC_R_BRACKET
@@ -65,6 +63,7 @@ typedef struct AC_TokenStreamNode
 {
 	AC_Token *data;
 	struct AC_TokenStreamNode *next;
+	struct AC_TokenStreamNode *prev;
 
 } AC_TokenStreamNode;
 
@@ -73,7 +72,10 @@ typedef struct AC_TokenStream
 	AC_TokenStreamNode *head;
 	AC_TokenStreamNode *next;
 	AC_TokenStreamNode *tail;
+
 	uint32_t end_reached;
+	uint32_t curr_line_num;
+	uint32_t curr_char_num;
 
 } AC_TokenStream;
 
@@ -88,6 +90,10 @@ AC_Result AC_destroyTokenStream(
 AC_Result AC_nextTokenTokenStream(
 	AC_TokenStream *token_stream,
 	AC_Token **token_ptr
+);
+
+AC_Result AC_backTrackTokenStream(
+	AC_TokenStream *token_stream
 );
 
 AC_Result AC_appendTokenStream(
