@@ -38,33 +38,7 @@
 
 #include "Scanner.h"
 
-AC_Result AC_readAndCheckTokenStream(
-    AC_TokenStream *token_stream, 
-    AC_TokenType AC_TokenStream, 
-    const char *error_message
-);
-
-AC_Result AC_isStatement(
-	AC_TokenStream *token_stream
-);
-
-AC_Result AC_isExpression(
-	AC_TokenStream *token_stream
-);
-
-AC_Result AC_isExpressionTail(
-	AC_TokenStream *token_stream
-);
-
-AC_Result AC_isTerm(
-	AC_TokenStream *token_stream
-);
-
-AC_Result AC_isTermTail(
-	AC_TokenStream *token_stream
-);
-
-AC_Result AC_isFactor(
+AC_Result AC_isProgram(
 	AC_TokenStream *token_stream
 );
 
