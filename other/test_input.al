@@ -1,1 +1,1 @@
-int test_variable = 100;
+{ int test_variable = 100; }

@@ -7,17 +7,20 @@
 //			Each word will be classified into a "part of speech."
 //
 
+#include "Common.h"
 #include "Core.h"
 
 ///////////////////////////// TOKEN TYPES
 
 typedef enum AC_TokenType
 {
-	KEYWORD,	
-	IDENTIFIER,	// variable name
-	OPERATOR,	// +,=,...
-	CONSTANT,	// 100
-	SEPARATOR	// punctuation
+	AC_KEYWORD,	
+	AC_IDENTIFIER, // variable name
+	AC_OPERATOR,   // +,=,...
+	AC_CONSTANT,   // 100
+	AC_SEMI_COLON,
+	AC_L_BRACKET,
+	AC_R_BRACKET
 
 } AC_TokenType; 
 
@@ -83,7 +86,7 @@ AC_Result AC_destroyTokenStream(
 
 AC_Result AC_nextTokenTokenStream(
 	AC_TokenStream *token_stream,
-	AC_TokenStreamNode **stream_node
+	AC_Token **token_ptr
 );
 
 AC_Result AC_appendTokenStream(

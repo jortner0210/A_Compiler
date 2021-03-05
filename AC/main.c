@@ -9,8 +9,7 @@ int main(int argc, char* argv[])
 	//
 	// Initialize globals
 	//
-	AC_initSymbolTable();
-	AC_printSymbolTable();	
+	AC_initSymbolTable();	
 
 	const char *file_name = argv[1];
 	AC_Result result;
@@ -20,16 +19,17 @@ int main(int argc, char* argv[])
 	//
 	AC_TokenStream *token_stream;
 	result = AC_sourceToTokenStream(file_name, &token_stream); 
-	AC_printTokenStream(token_stream);
 
+	//
+	// Parse Token Stream
+	//
+	result = AC_parseTokenStream(token_stream);
 
 	//
 	// Deallocate Resources
 	//
-
 	AC_destroyTokenStream(token_stream);
 	AC_destroySymbolTable();
 	
-
 	return 0;
 }

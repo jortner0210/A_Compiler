@@ -12,12 +12,14 @@ AC_Result AC_tokenTypeToString(
 {
 	switch (tok_type)
 	{
-		case KEYWORD:	 strcpy(string, "Keyword");	   break;	
-		case IDENTIFIER: strcpy(string, "Identifier"); break;
-		case OPERATOR: 	 strcpy(string, "Operator");   break;
-		case CONSTANT:	 strcpy(string, "Constant");   break;
-		case SEPARATOR:	 strcpy(string, "Separator");  break;
-		default:	     strcpy(string, "Not Found");
+		case AC_KEYWORD:	strcpy(string, "Keyword");	     break;	
+		case AC_IDENTIFIER: strcpy(string, "Identifier");    break;
+		case AC_OPERATOR: 	strcpy(string, "Operator");      break;
+		case AC_CONSTANT:	strcpy(string, "Constant");      break;
+		case AC_SEMI_COLON:	strcpy(string, "Semi Colon");    break;
+		case AC_R_BRACKET:	strcpy(string, "Right Bracket"); break;
+		case AC_L_BRACKET:	strcpy(string, "Left Bracket");  break;
+		default:	     	strcpy(string, "Not Found");
 	}
 	return AC_SUCCESS;
 }
@@ -90,6 +92,7 @@ AC_Result AC_initTokenStream(
 	(*token_stream) = (AC_TokenStream *)malloc(sizeof(AC_TokenStream));
 	(*token_stream)->head = NULL;
 	(*token_stream)->tail = NULL;
+	(*token_stream)->next = (*token_stream)->head;
 }
 
 //
@@ -120,6 +123,7 @@ AC_Result AC_destroyTokenStream(
 		}
 		free(token_stream);
 	}
+	AC_DEBUG_TRACE_ARG(AC_ALL_GOOD, "TOKEN STREAM DESTROYED!")
 	return AC_SUCCESS;
 }
 
@@ -129,16 +133,16 @@ AC_Result AC_destroyTokenStream(
 //
 AC_Result AC_nextTokenTokenStream(
 	AC_TokenStream *token_stream,
-	AC_TokenStreamNode **stream_node
+	AC_Token **token_ptr
 )
 {
 	if (token_stream->next != NULL) {
-		(*stream_node) = token_stream->next;
+		(*token_ptr) = token_stream->next->data;
 		token_stream->next = token_stream->next->next;
 		return AC_SUCCESS;
 	}
 	else {
-		(*stream_node) = NULL;
+		(*token_ptr) = NULL;
 		return AC_END_OF_TOKEN_STREAM;
 	}
 }
@@ -161,6 +165,7 @@ AC_Result AC_appendTokenStream(
 	if (token_stream->head == NULL) {
 		token_stream->head = new_node;
 		token_stream->tail = new_node;
+		token_stream->next = token_stream->head;
 	}
 	else {
 		token_stream->tail->next = new_node;
@@ -230,6 +235,8 @@ AC_Result AC_sourceToTokenStream(
 	}
 	free(buffer);
 
+	AC_DEBUG_TRACE_ARG(AC_ALL_GOOD, "TOKEN STREAM GENERATED!")
+
 	return AC_SUCCESS;
 }
 
@@ -287,11 +294,24 @@ static AC_Result AC_getToken(
 	switch (curr_char)
 	{
 		//
-		// SEPARATOR
+		// BRACKETS
+		//
+		case '{':
+			lexeme[1] = '\0';
+			tok_type = AC_L_BRACKET;
+			break;
+		
+		case '}':
+			lexeme[1] = '\0';
+			tok_type = AC_R_BRACKET;
+			break;
+
+		//
+		// SEMI COLON
 		//
 		case ';':
 			lexeme[1] = '\0';
-			tok_type = SEPARATOR;
+			tok_type = AC_SEMI_COLON;
 			break;
 
 		//
@@ -299,7 +319,7 @@ static AC_Result AC_getToken(
 		//
 		case '=':
 			lexeme[1] = '\0';
-			tok_type = OPERATOR;
+			tok_type = AC_OPERATOR;
 			break;
 
 		//
@@ -320,7 +340,7 @@ static AC_Result AC_getToken(
 				}
 			}
 			lexeme[char_count] = '\0';
-			tok_type = CONSTANT;
+			tok_type = AC_CONSTANT;
 			break;
 
 		//
@@ -353,7 +373,7 @@ static AC_Result AC_getToken(
 			if (kw_res == AC_SYMBOL_TABLE_SYMBOL_FOUND)
 				tok_type = st_lookup->tok_type;
 			else
-				tok_type = IDENTIFIER;	
+				tok_type = AC_IDENTIFIER;	
 			break;	
 		
 

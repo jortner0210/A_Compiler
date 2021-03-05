@@ -25,7 +25,9 @@ AC_SymbolTableItem *_ac_st_array[AC_MAX_HASH_ARRAY_SIZE] = {NULL};
 //
 AC_Result AC_initSymbolTable()
 {
-	AC_insertSymbolTable("int", KEYWORD);
+	AC_insertSymbolTable("int", AC_KEYWORD);
+
+	AC_DEBUG_TRACE_ARG(AC_ALL_GOOD, "SYMBOL TABLE INITIALIZED!")
 }
 
 AC_Result AC_destroySymbolTable()
@@ -42,6 +44,7 @@ AC_Result AC_destroySymbolTable()
 			_ac_st_array[i] = NULL;
 		}
 	}	
+	AC_DEBUG_TRACE_ARG(AC_ALL_GOOD, "SYMBOL TABLE DESTORYED!")
 }
 
 //
