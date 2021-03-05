@@ -17,7 +17,9 @@ typedef enum
 
 	AC_END_OF_TOKEN_STREAM,
 
-	AC_SYNTAX_ERROR
+	AC_SYNTAX_ERROR,
+
+    AC_NOT_FOUND
 
 } AC_Result;
 

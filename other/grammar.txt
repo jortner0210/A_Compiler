@@ -1,7 +1,54 @@
-Program    -> { Expression } eof
-Expression -> Term op Term ;
-Term       -> factor
-Term       -> Term op factor 
+Program    -> Statement eof
+Program    -> empty
+
+Statement -> Expression ;
+
+Expression -> factor Expression_Tail
+Expression -> factor
+
+Expression_Tail -> op Expression
+Expression_Tail -> empty
 
 op     -> +
 factor -> positive integers and floats
+
+https://www.cs.auckland.ac.nz/courses/compsci220s1t/archive/compsci220ft/lectures/GGlectures/220ch4_gramm.pdf
+
+- Factor: (F) - Generates expressions that cannot be "pulled apart."
+              - Single operand or parenthesized Expression
+            
+- Term: (T) - Generates a product of quotient of factors. i.e. 12*5/3
+            - A sequence of factors separated by ops(*|/)
+
+- Expression: (E) - Generates a sum or difference of one or more terms.
+                  - A single Term is an Expression, or a sequence of Terms separated by ops(+|-)
+
+A Grammar:
+
+(P) -> (S)
+
+(S) -> (E) ;
+
+(E) -> (E) op(+|-) (T)
+(E) -> (T)
+
+(T) -> (T) op(*|/) (F)
+(T) -> (F)
+
+(F) -> (N)
+
+(N) - (int|float)
+
+Statement -> Expression ;
+
+Expression      -> Term Expression_Tail
+
+Expression_Tail -> empty
+Expression_Tail -> Op(+|-) Expression
+
+Term      -> Factor Term_Tail
+
+Term_Tail -> empty
+Term_Tail -> Op(*|/) Factor Term
+
+Factor -> Number(int|float)

@@ -14,11 +14,10 @@
 
 typedef enum AC_TokenType
 {
-	AC_OPERATOR,   
-	AC_FACTOR,     
-	AC_SEMI_COLON,
-	AC_L_BRACKET,
-	AC_R_BRACKET
+	AC_ADD_SUBTRACT,
+	AC_MULTIPLY_DIVIDE,   
+	AC_NUMBER,     
+	AC_SEMI_COLON
 
 } AC_TokenType; 
 

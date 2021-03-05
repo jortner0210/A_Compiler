@@ -12,12 +12,11 @@ AC_Result AC_tokenTypeToString(
 {
 	switch (tok_type)
 	{
-		case AC_OPERATOR: 	strcpy(string, "Operator");      break;
-		case AC_FACTOR: 	strcpy(string, "Factor");        break;
-		case AC_SEMI_COLON:	strcpy(string, "Semi Colon");    break;
-		case AC_R_BRACKET:	strcpy(string, "Right Bracket"); break;
-		case AC_L_BRACKET:	strcpy(string, "Left Bracket");  break;
-		default:	     	strcpy(string, "Not Found");
+		case AC_ADD_SUBTRACT:	 strcpy(string, "Add/Subtract"); 	break;
+		case AC_MULTIPLY_DIVIDE: strcpy(string, "Multiply/Divide"); break;
+		case AC_NUMBER:		     strcpy(string, "Number"); 	  		break;
+		case AC_SEMI_COLON:	     strcpy(string, "Semi Colon"); 		break;
+		default:	     	     strcpy(string, "Not Found");
 	}
 	return AC_SUCCESS;
 }
@@ -156,7 +155,13 @@ AC_Result AC_backTrackTokenStream(
 )
 {
 	AC_DEBUG_TRACE_ARG(AC_FINE, "Token Stream Backtracking")
-	token_stream->next = token_stream->next->prev;	
+	if (token_stream->next == NULL) {
+		token_stream->next = token_stream->tail;
+		token_stream->end_reached = 1;
+	}
+	else {
+		token_stream->next = token_stream->next->prev;	
+	}
 }
 
 //
@@ -310,18 +315,6 @@ static AC_Result AC_getToken(
 	uint32_t char_count = 1;
 	switch (curr_char)
 	{
-		//
-		// BRACKETS
-		//
-		case '{':
-			lexeme[1] = '\0';
-			tok_type = AC_L_BRACKET;
-			break;
-		
-		case '}':
-			lexeme[1] = '\0';
-			tok_type = AC_R_BRACKET;
-			break;
 
 		//
 		// SEMI COLON
@@ -336,10 +329,14 @@ static AC_Result AC_getToken(
 		//
 		case '+':
 		case '-':
-		case '/':
-		case '*':
 			lexeme[1] = '\0';
-			tok_type = AC_OPERATOR;
+			tok_type = AC_ADD_SUBTRACT;
+			break;
+
+		case '*':
+		case '/':
+			lexeme[1] = '\0';
+			tok_type = AC_MULTIPLY_DIVIDE;
 			break;
 
 		//
@@ -360,7 +357,7 @@ static AC_Result AC_getToken(
 				}
 			}
 			lexeme[char_count] = '\0';
-			tok_type = AC_FACTOR;
+			tok_type = AC_NUMBER;
 			break;
 
 		default:
