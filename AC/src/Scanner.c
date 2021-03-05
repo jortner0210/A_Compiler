@@ -93,6 +93,7 @@ AC_Result AC_initTokenStream(
 	(*token_stream)->head = NULL;
 	(*token_stream)->tail = NULL;
 	(*token_stream)->next = (*token_stream)->head;
+	(*token_stream)->end_reached = 1;
 }
 
 //
@@ -143,6 +144,7 @@ AC_Result AC_nextTokenTokenStream(
 	}
 	else {
 		(*token_ptr) = NULL;
+		token_stream->end_reached = 1;
 		return AC_END_OF_TOKEN_STREAM;
 	}
 }
@@ -159,6 +161,8 @@ AC_Result AC_appendTokenStream(
 	AC_TokenStreamNode *new_node = (AC_TokenStreamNode *)malloc(sizeof(AC_TokenStreamNode));
 	new_node->next = NULL;
 	new_node->data = token;
+	
+	token_stream->end_reached = 0;
 
 	// If the stream is empty set head and tail.
 	// Otherwise append to tail and update tail.
@@ -197,6 +201,7 @@ AC_Result AC_resetTokenStream(
 )
 {
 	token_stream->next = token_stream->head;
+	token_stream->end_reached = 0;
 }
 
 //

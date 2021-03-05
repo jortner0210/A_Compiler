@@ -42,6 +42,13 @@ AC_Result AC_isProgram(
 	AC_TokenStream *token_stream
 );
 
+AC_Result AC_isStatementList(
+	AC_TokenStream *token_stream
+);
+
+AC_Result AC_isStatement(
+	AC_TokenStream *token_stream
+);
 
 AC_Result AC_parseTokenStream(
 	AC_TokenStream *token_stream

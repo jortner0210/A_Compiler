@@ -73,6 +73,7 @@ typedef struct AC_TokenStream
 	AC_TokenStreamNode *head;
 	AC_TokenStreamNode *next;
 	AC_TokenStreamNode *tail;
+	uint32_t end_reached;
 
 } AC_TokenStream;
 
