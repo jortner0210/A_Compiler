@@ -141,11 +141,13 @@ AC_Result AC_nextTokenTokenStream(
 		token_stream->next = token_stream->next->next;
 		token_stream->curr_line_num = (*token_ptr)->ln_num;
 		token_stream->curr_char_num = (*token_ptr)->char_num;
+		AC_DEBUG_TRACE_FMT(AC_FINE, "Next Token: %s", (*token_ptr)->lexeme)
 		return AC_SUCCESS;
 	}
 	else {
 		(*token_ptr) = NULL;
 		token_stream->end_reached = 1;
+		AC_DEBUG_TRACE_ARG(AC_FINE, "END OF TOKEN STREAM!")
 		return AC_END_OF_TOKEN_STREAM;
 	}
 }

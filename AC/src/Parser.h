@@ -25,15 +25,13 @@
 //
 
 //
-// Current Supported Grammer: Aim: LL(1) Grammar
+// Current Supported Grammer: 
 //
-// Program        -> { StatementList } eof
-// StatementList  -> empty
-// StatementList  -> Statement StatementList
-// Statement 	  -> id = Expression semi_colon
-// Expression 	  -> number ExpressionTail
-// ExpressionTail -> empty
-// ExpressionTail -> + Expression
+// Program    -> Statement
+// Statement  -> Expression ;
+// Expression -> Factor
+// Factor 	  -> Number
+// Number 	  -> int|float
 //
 
 #include "Scanner.h"
