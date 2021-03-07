@@ -114,7 +114,7 @@ AC_Result AC_isExpressionPrime(
 }
 
 //
-// Expression -> Term
+// Expression -> Term Expression'
 //
 AC_Result AC_isExpression(
     AC_TokenStream *token_stream
@@ -124,11 +124,13 @@ AC_Result AC_isExpression(
       
     // CHECK FOR TERM
     if (AC_isTerm(token_stream) != AC_SUCCESS) 
-        AC_EXIT_FAILURE("Expected a Valid Term")
+        return AC_ERROR;
+        //AC_EXIT_FAILURE("Expected a Valid Term")
 
     // CHECK FOR EXPRESSION PRIME
     if (AC_isExpressionPrime(token_stream) != AC_SUCCESS) 
-        AC_EXIT_FAILURE("Expected a Expression Prime")
+        return AC_ERROR;
+        //AC_EXIT_FAILURE("Expected a Expression Prime")
 
     return AC_SUCCESS;
 }
