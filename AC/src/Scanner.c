@@ -16,6 +16,7 @@ AC_Result AC_tokenTypeToString(
 		case AC_MULTIPLY_DIVIDE: strcpy(string, "Multiply/Divide"); break;
 		case AC_NUMBER:		     strcpy(string, "Number"); 	  		break;
 		case AC_SEMI_COLON:	     strcpy(string, "Semi Colon"); 		break;
+		case AC_TERMINAL:	     strcpy(string, "Terminal Char");	break;
 		default:	     	     strcpy(string, "Not Found");
 	}
 	return AC_SUCCESS;
@@ -258,6 +259,10 @@ AC_Result AC_sourceToTokenStream(
 		result = AC_getToken(NULL, &token);
 	}
 	free(buffer);
+
+	// Add terminal token to the end of the stream
+	AC_generateToken(&token, "-$", 0, 0, AC_TERMINAL);
+	AC_appendTokenStream((*token_stream), token);
 
 	AC_DEBUG_TRACE_ARG(AC_ALL_GOOD, "TOKEN STREAM GENERATED!")
 

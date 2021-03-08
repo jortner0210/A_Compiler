@@ -17,7 +17,9 @@ typedef enum AC_TokenType
 	AC_ADD_SUBTRACT,
 	AC_MULTIPLY_DIVIDE,   
 	AC_NUMBER,     
-	AC_SEMI_COLON
+	AC_SEMI_COLON,
+
+	AC_TERMINAL
 
 } AC_TokenType; 
 
