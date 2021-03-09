@@ -39,13 +39,22 @@ void AC_printResult(
 #define AC_NOT_GOOD "\x1B[31m" // red
 #define AC_ALL_GOOD "\x1B[32m" // green
 #define AC_FINE     "\x1B[33m" // warning
+#define AC_PARSE_FUNCTION "\x1B[34m" // blue
 
 #define KNRM  "\x1B[0m"
-#define KBLU  "\x1B[34m"
+
 #define KMAG  "\x1B[35m"
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
 
+
+#define AC_PARSE_FUNCTION_BEGIN            \
+    printf("%s", AC_PARSE_FUNCTION);       \
+    printf("Function Begin -- %s:%d:%s()", \
+                   __FILE__,               \
+                   __LINE__,               \
+                   __func__);              \
+    printf("%s\n", KNRM); 
 
 #define AC_SCANNER_CHAR_ERROR(wrong_char, line_num, char_num) 								 \
 	do {                                                									 \
@@ -99,6 +108,7 @@ void AC_printResult(
         printf("%s\n", KNRM);                           \
         exit(EXIT_FAILURE);                             \
     } while (0); 
+
 
 #define AC_EXIT_FAILURE(msg)\
     AC_EXIT_FAILURE_FMT("%s", msg)

@@ -25,23 +25,51 @@
 //
 
 //
-// Current Supported Grammer: 
+// Current Supported Grammer: Aim: LL(1) Grammar
 //
-// Program    -> Statement
-// Statement  -> Expression ;
-// Expression -> Factor
-// Factor 	  -> Number
-// Number 	  -> int|float
+// Program     -> Expression
+//
+// Expression  -> Term Expression' 
+//
+// Expression' -> empty
+// Expression' -> + Term Expression'
+//
+// Term        -> Factor Term'
+//
+// Term'       -> empty
+// Term'       -> * Factor Term'
+//
+// Factor 	   -> number
 //
 
 #include "Scanner.h"
+
+AC_Result AC_parseTokenStream(
+	AC_TokenStream *token_stream
+);
 
 AC_Result AC_isProgram(
 	AC_TokenStream *token_stream
 );
 
-AC_Result AC_parseTokenStream(
-	AC_TokenStream *token_stream
+AC_Result AC_isExpression(
+    AC_TokenStream *token_stream
+);
+
+AC_Result AC_isExpressionPrime(
+    AC_TokenStream *token_stream
+);
+
+AC_Result AC_isTerm(
+    AC_TokenStream *token_stream
+);
+
+AC_Result AC_isTermPrime(
+    AC_TokenStream *token_stream
+);
+
+AC_Result AC_isFactor(
+    AC_TokenStream *token_stream
 );
 
 

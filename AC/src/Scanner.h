@@ -78,6 +78,9 @@ typedef struct AC_TokenStream
 	uint32_t curr_line_num;
 	uint32_t curr_char_num;
 
+	AC_Token *curr_token;
+	AC_Token *next_token;
+
 } AC_TokenStream;
 
 AC_Result AC_initTokenStream(
@@ -85,6 +88,10 @@ AC_Result AC_initTokenStream(
 );
 
 AC_Result AC_destroyTokenStream(
+	AC_TokenStream *token_stream
+);
+
+AC_Result AC_bumpTokenStream(
 	AC_TokenStream *token_stream
 );
 

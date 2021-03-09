@@ -128,6 +128,40 @@ AC_Result AC_destroyTokenStream(
 	return AC_SUCCESS;
 }
 
+AC_Result AC_bumpTokenStream(
+	AC_TokenStream *token_stream
+)
+{
+	if (token_stream->next != NULL) {
+		token_stream->next = token_stream->next->next;
+
+		if (token_stream->next == NULL) {
+			token_stream->curr_token = NULL;
+			token_stream->next_token = NULL;
+		}
+		else {
+			AC_DEBUG_TRACE_FMT(AC_FINE, "Next Token: %s", token_stream->curr_token->lexeme)
+			
+			token_stream->curr_token = token_stream->next->data;
+			if (token_stream->next->next == NULL) 
+				token_stream->next_token = NULL;
+			else 
+				token_stream->next_token = token_stream->next->next->data;
+			
+			token_stream->curr_line_num = token_stream->curr_token->ln_num;
+			token_stream->curr_char_num = token_stream->curr_token->char_num;
+		}
+
+		return AC_SUCCESS;
+	}
+	else {
+		token_stream->next_token = NULL;
+		token_stream->end_reached = 1;
+		AC_DEBUG_TRACE_ARG(AC_FINE, "END OF TOKEN STREAM!")
+		return AC_END_OF_TOKEN_STREAM;
+	}
+}
+
 //
 // Get a pointer to the next token in a stream.
 // The 'next' pointer is held in the state of the token_stream.
@@ -222,6 +256,18 @@ AC_Result AC_resetTokenStream(
 {
 	token_stream->next = token_stream->head;
 	token_stream->end_reached = 0;
+	
+	if (token_stream->head != NULL) {
+		token_stream->curr_token = token_stream->head->data;
+		if (token_stream->head->next != NULL)
+			token_stream->next_token = token_stream->head->next->data;
+		else
+			token_stream->next_token = NULL;
+	}
+	else {
+		token_stream->curr_token = NULL;
+		token_stream->next_token = NULL;
+	}
 }
 
 //
