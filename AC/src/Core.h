@@ -48,12 +48,12 @@ void AC_printResult(
 #define KWHT  "\x1B[37m"
 
 
-#define AC_PARSE_FUNCTION_BEGIN            \
-    printf("%s", AC_PARSE_FUNCTION);       \
-    printf("Function Begin -- %s:%d:%s()", \
-                   __FILE__,               \
-                   __LINE__,               \
-                   __func__);              \
+#define AC_PARSE_FUNCTION_BEGIN           \
+    printf("%s", AC_PARSE_FUNCTION);      \
+    printf("AC FUNC BEGIN -- %s:%d:%s()", \
+                   __FILE__,              \
+                   __LINE__,              \
+                   __func__);             \
     printf("%s\n", KNRM); 
 
 #define AC_SCANNER_CHAR_ERROR(wrong_char, line_num, char_num) 								 \
