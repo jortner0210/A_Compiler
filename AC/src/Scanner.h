@@ -12,6 +12,8 @@
 
 ///////////////////////////// TOKEN TYPES
 
+// TO DO: Tokens need token_name and attribute_value
+
 typedef enum AC_TokenType
 {
 	AC_ADD_SUBTRACT,

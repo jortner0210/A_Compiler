@@ -64,11 +64,16 @@ AC_Result AC_printToken(
 {
 	char tok_type_str[100];
 	AC_tokenTypeToString(token->tok_type, tok_type_str);
-	printf("Token id: %d\n", token->id);
-	printf("Type    : %d, %s\n", token->tok_type, tok_type_str);
-	printf("Lexeme  : %s\n", token->lexeme);
-	printf("Line #%d, Char #%d\n", token->ln_num, token->char_num);
-	printf("/////////////////////////////\n");
+
+	printf("Token(type={%s:%d}, ", tok_type_str, token->tok_type);
+	printf("line#=%d, char#=%d, ", token->ln_num, token->char_num);
+	printf("lexeme={%s})\n", token->lexeme);
+
+	//printf("Token id: %d\n", token->id);
+	//printf("Type    : %d, %s\n", token->tok_type, tok_type_str);
+	//printf("Lexeme  : %s\n", token->lexeme);
+	//printf("Line #%d, Char #%d\n", token->ln_num, token->char_num);
+	//printf("/////////////////////////////\n");
 }
 
 ///////////////////////////// TOKEN STREAM FUNCTIONS

@@ -19,12 +19,12 @@ int main(int argc, char* argv[])
 	//
 	AC_TokenStream *token_stream;
 	result = AC_sourceToTokenStream(file_name, &token_stream); 
-	//AC_printTokenStream(token_stream);
+	AC_printTokenStream(token_stream);
 
 	//
 	// Parse Token Stream
 	//
-	result = AC_parseTokenStream(token_stream);
+	//result = AC_parseTokenStream(token_stream);
 
 	//
 	// Deallocate Resources
